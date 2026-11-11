@@ -1,0 +1,52 @@
+/**
+ * App shell globals — start screen flex + footer.
+ */
+
+.app-start {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-footer {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Camera capture owns the viewport — hide footer so it cannot cover the shutter. */
+html[data-vf-camera='open'] .app-footer {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.app-footer__inner {
+  padding-inline: calc(var(--vf-landing-inset-x) + env(safe-area-inset-left, 0px))
+    calc(var(--vf-landing-inset-x) + env(safe-area-inset-right, 0px));
+}
+
+.app-footer--on-dark .app-footer__inner {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  justify-content: flex-end;
+  align-items: flex-end;
+  text-align: right;
+  padding-inline: env(safe-area-inset-left, 0px) var(--vf-landing-inline-end);
+  padding-bottom: calc(
+    var(--vf-landing-inset-bottom) + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+.app-footer--on-dark .app-footer__inner,
+.app-footer--on-dark .app-footer__copy {
+  color: var(--vf-landing-micro-fg);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+}
+
+.app-footer--on-dark .app-footer__copy {
+  margin: 0;
+  line-height: 1.35;
+}

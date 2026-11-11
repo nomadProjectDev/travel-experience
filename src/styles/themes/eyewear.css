@@ -1,0 +1,15 @@
+/**
+ * Eyewear client skin — Multiopticas-like white optical retail.
+ */
+[data-theme='eyewear'] {
+  --vf-bg-0: 255 255 255;
+  --vf-bg-1: 255 255 255;
+  --vf-surface-1: 255 255 255;
+  --vf-surface-2: 244 244 244;
+  --vf-rail: 250 250 250;
+  --vf-accent: 17 17 17;
+  --vf-accent-strong: 0 0 0;
+  --vf-accent-ink: 255 255 255;
+  --vf-border-strong: 110 110 110;
+  --vf-focus: 60 60 60;
+}

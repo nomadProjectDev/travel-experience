@@ -1,0 +1,771 @@
+/* Full-screen camera viewport shared by rotated MUPI and upright cameras. */
+.mupiVideoContainer,
+.mupiVideoContainerPlain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  container-type: size;
+}
+
+/* La cámara del MUPI está rotada 90° — summit-booth-june */
+.mupiVideoContainer video {
+  /* Override Tailwind preflight (`max-width: 100%; height: auto`) — breaks 100vh/100vw */
+  max-width: none;
+  max-height: none;
+  width: 100cqb;
+  height: 100cqi;
+  flex-shrink: 0;
+  object-fit: contain;
+  transform: rotate(270deg) rotateY(180deg);
+  transform-origin: center center;
+}
+
+/* Laptop dev: VITE_CAMERA_ROTATION_DEG=0 */
+.mupiVideoContainerPlain video {
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+  object-fit: contain;
+  transform: none;
+}
+
+.liveVignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.38) 0%,
+    transparent 42%,
+    rgba(0, 0, 0, 0.46) 100%
+  );
+}
+
+.errorBackdrop {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.55) 45%,
+    rgba(0, 0, 0, 0.75) 100%
+  );
+}
+
+.shutterFlash {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: #ffffff;
+}
+
+.previewVignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    transparent 42%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+}
+
+.previewImage {
+  position: absolute;
+  inset: 0;
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.closeIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Face-fit overlay canvas — sits with the video; share MUPI transform when needed. */
+.faceFitOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
+.mupiVideoContainer .faceFitOverlay {
+  max-width: none;
+  max-height: none;
+  width: 100vh;
+  height: 100vw;
+  flex-shrink: 0;
+  inset: auto;
+  transform: rotate(270deg) rotateY(180deg);
+  transform-origin: center center;
+}
+
+.mupiVideoContainerPlain .faceFitOverlay {
+  max-width: none;
+  max-height: none;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
+}
+
+/* Small status chip — never blanks the camera preview. */
+.faceFitBadge {
+  position: absolute;
+  top: max(0.75rem, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #f4f4f5;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.612rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.faceFitBadgeSpinner {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+/* Pose coach — top-center badge; keeps bottom clear for Medidas + shutter. */
+.faceFitCoach {
+  position: absolute;
+  top: max(0.75rem, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  pointer-events: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fafafa;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.612rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* Optical Medidas panel — tall bottom sheet; stays clear of shutter. */
+.faceFitPanelRoot {
+  position: absolute;
+  z-index: 7;
+  left: max(0.65rem, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  max-width: min(24rem, calc(100vw - 1.5rem));
+  pointer-events: none;
+}
+
+.faceFitPanelRoot[data-placement='live'] {
+  bottom: max(7.25rem, calc(env(safe-area-inset-bottom) + 6.25rem));
+}
+
+.faceFitPanelRoot[data-placement='preview'] {
+  bottom: max(5.5rem, calc(env(safe-area-inset-bottom) + 4.75rem));
+}
+
+.faceFitPanelToggle {
+  pointer-events: auto;
+  appearance: none;
+  border: 1px solid rgba(255, 80, 80, 0.55);
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.55);
+  color: #ffe8e8;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+}
+
+.faceFitPanelToggle:focus-visible {
+  outline: 2px solid rgba(255, 180, 180, 0.9);
+  outline-offset: 2px;
+}
+
+.faceFitPanel {
+  pointer-events: auto;
+  width: min(24rem, calc(100vw - 1.5rem));
+  /* Tall sheet so larger type + all rows fit; scroll only as last resort. */
+  max-height: min(72vh, 40rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 0.5rem 0.5rem 0.35rem 0.35rem;
+  border: 1px solid rgba(255, 70, 70, 0.4);
+  background: rgba(8, 8, 10, 0.9);
+  color: #f4f4f5;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.4);
+  padding: 0.65rem 0.8rem 0.7rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.faceFitPanelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.faceFitPanelTitle {
+  margin: 0;
+  font-size: 0.8075rem;
+  font-weight: 650;
+  letter-spacing: 0.015em;
+  line-height: 1.25;
+  color: #fff1f1;
+}
+
+.faceFitPanelClose {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #e4e4e7;
+  font-size: 1.0625rem;
+  line-height: 1;
+  padding: 0.1rem 0.25rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.faceFitPanelCaveat {
+  margin: 0 0 0.45rem;
+  font-size: 0.629rem;
+  line-height: 1.35;
+  color: #d4d4d8;
+}
+
+.faceFitPanelPreliminary {
+  margin: 0 0 0.4rem;
+  color: #fca5a5;
+  font-size: 0.595rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.faceFitPanelList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.faceFitPanelList[data-presentation='preliminary'] {
+  opacity: 0.62;
+}
+
+.faceFitPanelRow {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 0.35rem;
+}
+
+.faceFitPanelRow:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.faceFitPanelRowMain {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.faceFitPanelLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #fecaca;
+  line-height: 1.25;
+}
+
+.faceFitPanelValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.663rem;
+  font-variant-numeric: tabular-nums;
+  color: #fafafa;
+  text-align: right;
+  line-height: 1.3;
+  flex-shrink: 0;
+  max-width: 58%;
+}
+
+.faceFitPanelDetail {
+  display: block;
+  margin-top: 0.12rem;
+  font-size: 0.612rem;
+  color: #a1a1aa;
+  line-height: 1.3;
+}
+
+.faceFitPanelExplain {
+  margin: 0.15rem 0 0;
+  font-size: 0.612rem;
+  line-height: 1.35;
+  color: #d4d4d8;
+}
+
+.faceFitPanelEdu {
+  margin-top: 0.5rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.faceFitPanelEduTitle {
+  margin: 0 0 0.2rem;
+  font-size: 0.663rem;
+  font-weight: 600;
+  color: #fecaca;
+}
+
+.faceFitPanelEduBody {
+  margin: 0;
+  font-size: 0.612rem;
+  line-height: 1.35;
+  color: #d4d4d8;
+}
+
+.faceFitPanelNext {
+  margin: 0.3rem 0 0;
+  font-size: 0.595rem;
+  line-height: 1.3;
+  color: #71717a;
+  font-style: italic;
+}
+
+.calibrationPanel {
+  position: absolute;
+  z-index: 20;
+  top: max(3.5rem, calc(env(safe-area-inset-top) + 3rem));
+  right: max(0.65rem, env(safe-area-inset-right));
+  width: min(22.5rem, calc(100vw - 1.3rem));
+  max-height: min(38dvh, 22rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(255, 92, 92, 0.48);
+  border-radius: 0.65rem;
+  background: rgba(8, 8, 10, 0.94);
+  color: #f4f4f5;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  padding: 0.75rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.calibrationPanelToggle {
+  position: absolute;
+  z-index: 20;
+  top: max(3.25rem, calc(env(safe-area-inset-top) + 2.75rem));
+  right: max(0.65rem, env(safe-area-inset-right));
+  min-height: 2.5rem;
+  border: 1px solid rgba(255, 92, 92, 0.55);
+  border-radius: 999px;
+  background: rgba(8, 8, 10, 0.9);
+  color: #fee2e2;
+  padding: 0.45rem 0.8rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.612rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.calibrationHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.calibrationClose {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  background: transparent;
+  color: #d4d4d8;
+  font-size: 1.02rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.calibrationEyebrow {
+  display: block;
+  margin-bottom: 0.12rem;
+  color: #fca5a5;
+  font-size: 0.527rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.calibrationTitle {
+  margin: 0;
+  color: #fff;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.calibrationProgress {
+  flex: none;
+  color: #a1a1aa;
+  font-size: 0.595rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.calibrationWarning,
+.calibrationPrivacy {
+  margin: 0.55rem 0;
+  color: #d4d4d8;
+  font-size: 0.595rem;
+  line-height: 1.35;
+}
+
+.calibrationWarning {
+  padding: 0.45rem 0.55rem;
+  border-left: 2px solid #ef4444;
+  background: rgba(127, 29, 29, 0.2);
+}
+
+.calibrationHint {
+  margin: 0.45rem 0 0.55rem;
+  color: #f4f4f5;
+  font-size: 0.663rem;
+  line-height: 1.4;
+}
+
+.calibrationPrimary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  margin: 0.15rem 0 0.35rem;
+}
+
+.calibrationPrimary input {
+  width: 100%;
+  min-height: 2.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.45rem;
+  background: #18181b;
+  color: #fafafa;
+  padding: 0.45rem 0.55rem;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.calibrationPrimary small {
+  color: #a1a1aa;
+  font-size: 0.578rem;
+  line-height: 1.35;
+}
+
+.calibrationStatusNote {
+  margin: 0 0 0.45rem;
+  color: #fbbf24;
+  font-size: 0.595rem;
+  line-height: 1.35;
+}
+
+.calibrationStatusNote[data-tone='ok'] {
+  color: #86efac;
+}
+
+.calibrationBlocker {
+  margin: 0.35rem 0 0.5rem;
+  color: #fecaca;
+  font-size: 0.612rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.calibrationLabToggle,
+.calibrationSecondaryToggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin: 0.55rem 0 0.35rem;
+  color: #e4e4e7;
+  font-size: 0.595rem;
+  line-height: 1.35;
+}
+
+.calibrationSecondaryToggle {
+  width: 100%;
+  margin: 0 0 0.45rem;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  color: #bfdbfe;
+  font-weight: 650;
+}
+
+.calibrationLabToggle input {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  accent-color: #ef4444;
+}
+
+.calibrationStepNav {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.calibrationStepNav strong {
+  color: #fff1f1;
+  font-size: 0.646rem;
+  text-align: center;
+}
+
+.calibrationStepNav button,
+.calibrationChecklist button {
+  min-height: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e4e4e7;
+  cursor: pointer;
+}
+
+.calibrationStepNav button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.calibrationChecklist {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  margin: 0.5rem 0 0.65rem;
+}
+
+.calibrationChecklist button {
+  min-height: 1.75rem;
+  padding: 0;
+  font-size: 0.578rem;
+}
+
+.calibrationChecklist button[data-active='true'] {
+  border-color: #f87171;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fff;
+}
+
+.calibrationChecklist button[data-complete='true'] {
+  border-color: rgba(74, 222, 128, 0.5);
+  color: #86efac;
+}
+
+.calibrationForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.calibrationForm label:not(.calibrationCheck) {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.22rem;
+}
+
+.calibrationForm label > span,
+.calibrationQuality strong {
+  color: #d4d4d8;
+  font-size: 0.5525rem;
+  font-weight: 600;
+}
+
+.calibrationForm input:not([type='checkbox']),
+.calibrationForm select {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.4rem;
+  background: #18181b;
+  color: #fafafa;
+  padding: 0.4rem 0.48rem;
+  font: inherit;
+  font-size: 0.612rem;
+}
+
+.calibrationCheck,
+.calibrationConsent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  color: #e4e4e7;
+  font-size: 0.595rem;
+  line-height: 1.35;
+}
+
+.calibrationCheck {
+  align-self: end;
+  min-height: 2.25rem;
+  align-items: center;
+}
+
+.calibrationCheck input,
+.calibrationConsent input {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  accent-color: #ef4444;
+}
+
+.calibrationQuality {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  margin: 0.35rem 0;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.45rem;
+  color: #d4d4d8;
+  font-size: 0.578rem;
+  line-height: 1.35;
+}
+
+.calibrationQuality[data-status='valid'] {
+  border-color: rgba(74, 222, 128, 0.42);
+}
+
+.calibrationQuality[data-status='limited'],
+.calibrationQuality[data-status='rejected'] {
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+.sizeSandbox {
+  margin: 0.6rem 0;
+  padding: 0.65rem;
+  border: 1px solid rgba(96, 165, 250, 0.4);
+  border-radius: 0.5rem;
+  color: #dbeafe;
+  font-size: 0.578rem;
+}
+
+.sizeSandbox h3,
+.sizeSandbox p {
+  margin: 0 0 0.45rem;
+}
+
+.sizeSandbox ul {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sizeSandbox li {
+  display: grid;
+  gap: 0.12rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sizeSandbox a {
+  color: #bfdbfe;
+}
+
+.sizeSandbox small {
+  color: #a1a1aa;
+}
+
+.calibrationPrivacy {
+  color: #a1a1aa;
+}
+
+.calibrationExport {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  width: 100%;
+  min-height: 2.65rem;
+  margin-top: 0.35rem;
+  border: 0;
+  border-radius: 0.48rem;
+  background: #dc2626;
+  color: #fff;
+  font: inherit;
+  font-size: 0.663rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 -0.6rem 0.8rem rgba(8, 8, 10, 0.92);
+}
+
+.calibrationExport:disabled {
+  background: #3f3f46;
+  color: #a1a1aa;
+  cursor: not-allowed;
+}
+
+.calibrationPanel :is(button, input, select):focus-visible {
+  outline: 2px solid #fca5a5;
+  outline-offset: 2px;
+}
+
+@media (max-width: 719px) {
+  .calibrationPanel {
+    left: auto;
+    right: max(0.65rem, env(safe-area-inset-right));
+    width: min(21rem, calc(100vw - 1.2rem));
+    max-height: min(36dvh, 20rem);
+  }
+
+  .calibrationForm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 720px) {
+  .faceFitPanelRoot[data-placement='live'],
+  .faceFitPanelRoot[data-placement='preview'] {
+    left: auto;
+    right: max(0.85rem, env(safe-area-inset-right));
+    top: max(3.25rem, calc(env(safe-area-inset-top) + 2.75rem));
+    bottom: auto;
+    align-items: flex-end;
+  }
+
+  .faceFitPanel {
+    max-height: min(78vh, 44rem);
+  }
+}

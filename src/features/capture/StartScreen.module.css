@@ -1,0 +1,488 @@
+.landing {
+  --vf-footer-offset: 4rem; /* matches fixed .app-footer h-16 */
+  --vf-landing-footer-gap: clamp(1.25rem, 3vh, 2rem);
+  --vf-landing-cta-max: min(100%, 22rem);
+  --vf-landing-hero-gap: clamp(1.5rem, 3vh, 2.25rem);
+  --vf-landing-hero-nudge: 0px;
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  margin: 0;
+  padding: 0;
+  padding-bottom: calc(
+    var(--vf-footer-offset) + var(--vf-landing-footer-gap) +
+      env(safe-area-inset-bottom, 0px)
+  );
+  max-width: none;
+  overflow: hidden;
+}
+
+.landingMedia {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.72) contrast(1.08) brightness(0.68);
+  transform: scale(1.06);
+}
+
+.entryMasthead {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.75rem, 1.6vh, 1.1rem);
+  width: 100%;
+  max-width: min(100%, 36rem);
+  text-align: left;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.42);
+}
+
+.entryEyebrow,
+.entryTitle,
+.entrySubtitle,
+.entryPrivacy {
+  margin: 0;
+}
+
+.entryEyebrow {
+  font-size: clamp(0.748rem, 1.0625vmin, 0.8925rem);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.entryTitle {
+  width: 100%;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3.2725rem, 8.075vmin, 6.2475rem);
+  font-weight: 600;
+  line-height: 0.94;
+  letter-spacing: -0.02em;
+  color: white;
+  text-shadow:
+    0 2px 20px rgba(0, 0, 0, 0.5),
+    0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.entrySubtitle {
+  max-width: 36ch;
+  font-size: clamp(1.2325rem, 1.9975vmin, 1.5725rem);
+  font-weight: 520;
+  line-height: 1.46;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.entryPrivacy {
+  max-width: 40ch;
+  font-size: clamp(0.867rem, 1.19vmin, 1.02rem);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* Editorial micro-copy — balances left hero stack (magazine cues, static) */
+.landingMicro {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.landingMicroEdition,
+.landingMicroRail,
+.landingMicroIssue {
+  position: absolute;
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.35;
+  color: var(--vf-landing-micro-fg);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+}
+
+.landingMicroEdition {
+  top: calc(var(--vf-landing-inset-top) + env(safe-area-inset-top, 0px));
+  left: 0;
+  right: auto;
+  padding-left: calc(
+    var(--vf-landing-inset-x) + env(safe-area-inset-left, 0px)
+  );
+  font-size: clamp(0.578rem, 0.8925vw, 0.663rem);
+}
+
+.landingMicroRail {
+  top: calc(var(--vf-landing-inset-top) + env(safe-area-inset-top, 0px));
+  right: 0;
+  left: auto;
+  padding-right: var(--vf-landing-inline-end);
+  text-align: right;
+  font-size: clamp(0.459rem, 0.714vw, 0.527rem);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 0.2em;
+  opacity: 0.88;
+}
+
+.landingMicroIssue {
+  bottom: calc(
+    var(--vf-landing-inset-bottom) + env(safe-area-inset-bottom, 0px)
+  );
+  left: 0;
+  right: auto;
+  padding-left: calc(
+    var(--vf-landing-inset-x) + env(safe-area-inset-left, 0px)
+  );
+  font-size: clamp(0.578rem, 0.8925vw, 0.663rem);
+  text-align: left;
+}
+
+.landingBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      165deg,
+      rgba(var(--vf-focus), 0.06) 0%,
+      transparent 36%
+    ),
+    /* Single bottom read zone — spans masthead + CTA + footer gap (no row seams) */
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 28%,
+      rgba(0, 0, 0, 0.12) 44%,
+      rgba(0, 0, 0, 0.28) 58%,
+      rgba(0, 0, 0, 0.44) 72%,
+      rgba(0, 0, 0, 0.58) 86%,
+      rgba(0, 0, 0, 0.64) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(var(--color-bg), 0.58) 0%,
+      rgba(var(--color-bg), 0.36) 18%,
+      rgba(var(--color-bg), 0.12) 34%,
+      transparent 48%
+    ),
+    radial-gradient(
+      ellipse 120% 70% at 100% 8%,
+      rgba(var(--vf-border-strong), 0.05),
+      transparent 52%
+    );
+}
+
+.landingHero {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--vf-landing-hero-gap);
+  min-height: 0;
+  margin-block: auto;
+  transform: translateY(var(--vf-landing-hero-nudge));
+  padding-block: clamp(0.5rem, 1.5vh, 1rem);
+  padding-inline-start: calc(
+    var(--vf-landing-inset-x) + env(safe-area-inset-left, 0px)
+  );
+  padding-inline-end: calc(
+    var(--vf-landing-inset-x) + env(safe-area-inset-right, 0px)
+  );
+}
+
+.masthead {
+  gap: clamp(0.65rem, 1.4vh, 0.95rem);
+  max-width: min(100%, 28rem);
+}
+
+.landingStatus {
+  position: relative;
+  margin: clamp(-0.35rem, -0.6vh, -0.2rem) 0 0;
+  padding: 0;
+  min-height: 1.35em;
+  font-size: clamp(0.8075rem, 1.36vw, 0.935rem);
+  font-weight: 520;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: min(100%, 26rem);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
+}
+
+.landingStatusLine {
+  display: block;
+}
+
+.ctaWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.5rem, 1.2vh, 0.75rem);
+  width: var(--vf-landing-cta-max);
+  max-width: var(--vf-landing-cta-max);
+}
+
+.landingHero .cta {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  min-width: min(100%, 14rem);
+  align-self: stretch;
+}
+
+.ctaSpinner {
+  width: clamp(1.25rem, 2.2vmin, 1.45rem) !important;
+  height: clamp(1.25rem, 2.2vmin, 1.45rem) !important;
+  flex-shrink: 0;
+}
+
+.ctaError {
+  margin: 0;
+  font-size: clamp(0.68rem, 1.4875vw, 0.782rem);
+  line-height: 1.45;
+  color: rgb(var(--color-danger));
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+.ctaIcon {
+  width: clamp(1.25rem, 2.2vmin, 1.45rem);
+  height: clamp(1.25rem, 2.2vmin, 1.45rem);
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+/* Generating — full-bleed video (wait overlay) + editorial block like landing */
+.generatingMirror {
+  --vf-footer-offset: 4rem;
+  --vf-gen-hero-gap: clamp(1.5rem, 3vh, 2.25rem);
+  --vf-gen-hero-nudge: 0px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding-bottom: calc(
+    var(--vf-footer-offset) + clamp(1.25rem, 3vh, 2rem) + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+.generatingBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      165deg,
+      rgba(var(--vf-focus), 0.06) 0%,
+      transparent 36%
+    ),
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 22%,
+      rgba(0, 0, 0, 0.14) 42%,
+      rgba(0, 0, 0, 0.32) 58%,
+      rgba(0, 0, 0, 0.5) 74%,
+      rgba(0, 0, 0, 0.62) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(var(--color-bg), 0.52) 0%,
+      rgba(var(--color-bg), 0.3) 20%,
+      rgba(var(--color-bg), 0.1) 38%,
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse 120% 70% at 100% 8%,
+      rgba(var(--vf-border-strong), 0.05),
+      transparent 52%
+    );
+}
+
+.generatingOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.28) 0%,
+    rgba(0, 0, 0, 0.42) 50%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+.generatingHero {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 0;
+  margin-block: auto;
+  transform: translateY(var(--vf-gen-hero-nudge));
+  padding-block: clamp(0.5rem, 1.5vh, 1rem);
+  padding-inline: calc(var(--vf-landing-inset-x) + env(safe-area-inset-left, 0px))
+    calc(var(--vf-landing-inset-x) + env(safe-area-inset-right, 0px));
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.generatingContent {
+  --vf-gen-gap: clamp(0.85rem, 2vh, 1.35rem);
+  --vf-gen-title: clamp(1.9975rem, 5.525vw, 3.1875rem);
+  --vf-gen-eyebrow: clamp(0.612rem, 1.36vw, 0.7225rem);
+  --vf-gen-subtitle: clamp(0.85rem, 1.36vw, 1.02rem);
+  --vf-gen-status-fs: clamp(0.8075rem, 1.4875vw, 0.952rem);
+  --vf-gen-spinner: clamp(2.25rem, 5.5vmin, 2.85rem);
+  --vf-gen-block-max: min(100%, 28rem);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: var(--vf-gen-gap);
+  width: 100%;
+  max-width: var(--vf-gen-block-max);
+}
+
+.generatingSpinner {
+  width: var(--vf-gen-spinner) !important;
+  height: var(--vf-gen-spinner) !important;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Viewport chrome — above app-footer (z-index 40). Avoid transform ancestors
+   so position:fixed stays viewport-relative and shutter hits aren't eaten. */
+.cameraOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  background-color: #000;
+  isolation: isolate;
+}
+
+/* Hold the capture full-bleed while local framing runs — no wait overlay flash. */
+.holdFrame {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.holdFrameImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.landingShell {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.generatingTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: var(--vf-gen-title);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: white;
+  margin: 0;
+  max-width: 14ch;
+  text-shadow:
+    0 2px 20px rgba(0, 0, 0, 0.5),
+    0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.generatingEyebrow {
+  margin: 0;
+  font-size: var(--vf-gen-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+}
+
+.generatingSubtitle {
+  margin: 0;
+  font-size: var(--vf-gen-subtitle);
+  font-weight: 520;
+  line-height: 1.46;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 28ch;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
+}
+
+.generatingStatus {
+  position: relative;
+  margin: clamp(0.1rem, 0.35vh, 0.25rem) 0 0;
+  padding: 0;
+  min-height: 1.5em;
+  font-size: var(--vf-gen-status-fs);
+  font-weight: 520;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 26ch;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.38);
+}
+
+.generatingStatusLine {
+  display: block;
+}
+
+.generatingError {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.75rem, 1.5vh, 1rem);
+  width: 100%;
+  max-width: min(100%, 22rem);
+}
+
+.generatingErrorText {
+  color: rgb(var(--color-danger));
+  margin: 0;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* Eyewear shop generating — shell only; the panel lives in EyewearWaitOverlay */
+.generatingShop {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: rgb(var(--vf-surface-2));
+  isolation: isolate;
+}
+

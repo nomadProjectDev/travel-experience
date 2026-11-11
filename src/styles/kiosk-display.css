@@ -1,0 +1,57 @@
+/**
+ * Portrait MUPI display contract.
+ * The build is MUPI-first; there is no customer-facing display switch.
+ */
+html[data-display='mupi'] {
+  --vf-ui-scale: 1;
+  --vf-touch-target-min: 3.5rem;
+  font-size: 100%;
+}
+
+@media (orientation: portrait) and (min-height: 1000px) {
+  html[data-display='mupi'] {
+    font-size: 112.5%;
+    --fs-label: clamp(0.8075rem, 1.02vmin, 0.9775rem);
+    --fs-body: clamp(0.918rem, 1.2325vmin, 1.105rem);
+    --fs-title-sm: clamp(1.3175rem, 2.04vmin, 1.785rem);
+    --fs-title: clamp(1.8275rem, 3.825vmin, 2.9325rem);
+    --fs-hero: clamp(3.06rem, 7.225vmin, 5.8225rem);
+    --touch-target: clamp(3.65rem, 6vmin, 4.65rem);
+    --kiosk-pad-x: clamp(2rem, 4vw, 4rem);
+    --kiosk-pad-y: clamp(2rem, 3vh, 3.5rem);
+  }
+}
+
+@media (orientation: portrait) and (min-height: 1800px) {
+  html[data-display='mupi'] {
+    font-size: 125%;
+    --fs-label: clamp(0.918rem, 1.1475vmin, 1.088rem);
+    --fs-body: clamp(1.02rem, 1.4025vmin, 1.258rem);
+    --fs-title-sm: clamp(1.4875rem, 2.3375vmin, 2.04rem);
+    --fs-title: clamp(2.0825rem, 4.42vmin, 3.3575rem);
+    --fs-hero: clamp(3.485rem, 8.33vmin, 6.6725rem);
+    --touch-target: clamp(3.85rem, 6.5vmin, 5rem);
+  }
+}
+
+html[data-display='mupi'] :where(button, [role='button']) {
+  min-block-size: max(3.5rem, var(--vf-touch-target-min));
+}
+
+html[data-display='mupi'] .capture-shutter {
+  min-inline-size: max(5rem, var(--vf-touch-target-min));
+  min-block-size: max(5rem, var(--vf-touch-target-min));
+}
+
+html[data-display='mupi'] .capture-timer-btn,
+html[data-display='mupi'] .capture-close {
+  min-inline-size: max(var(--touch-target, 3.5rem), var(--vf-touch-target-min));
+  min-block-size: max(var(--touch-target, 3.5rem), var(--vf-touch-target-min));
+}
+
+html[data-display='mupi'] .capture-hint {
+  max-inline-size: 100%;
+  font-size: clamp(0.765rem, 0.85vmin, 0.85rem);
+  line-height: 1.4;
+  text-align: center;
+}

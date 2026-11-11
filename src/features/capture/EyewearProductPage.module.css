@@ -1,0 +1,416 @@
+/**
+ * Multiopticas-inspired optical PDP — white retail, Probador overlay on photo.
+ */
+
+.page {
+  --pdp-pad-x: clamp(1rem, 3.5vw, 2.5rem);
+  --pdp-pad-y: clamp(0.75rem, 2vh, 1.25rem);
+  --pdp-max: 72rem;
+  --vf-footer-offset: 4rem;
+  box-sizing: border-box;
+  min-height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3.5vh, 2.5rem);
+  padding: calc(var(--pdp-pad-y) + env(safe-area-inset-top, 0px))
+    calc(var(--pdp-pad-x) + env(safe-area-inset-right, 0px))
+    calc(
+      var(--pdp-pad-y) + var(--vf-footer-offset) + env(safe-area-inset-bottom, 0px)
+    )
+    calc(var(--pdp-pad-x) + env(safe-area-inset-left, 0px));
+  background: rgb(var(--vf-bg-0));
+  color: rgb(var(--vf-accent));
+}
+
+.top {
+  max-width: var(--pdp-max);
+  width: 100%;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(var(--vf-accent), 0.08);
+}
+
+.brandMark {
+  margin: 0;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: clamp(0.8925rem, 1.7vw, 1.1475rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: rgb(var(--vf-accent));
+}
+
+.brandLogo {
+  height: clamp(1.5rem, 3vmin, 2rem);
+  width: auto;
+  object-fit: contain;
+}
+
+.nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.navItem {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: rgb(var(--vf-border-strong));
+}
+
+.pdp {
+  max-width: var(--pdp-max);
+  width: 100%;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.75fr);
+  gap: clamp(1.25rem, 3.5vw, 2.75rem);
+  align-items: start;
+}
+
+@media (max-width: 767px) {
+  .pdp {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+
+  .nav {
+    display: none;
+  }
+}
+
+.stage {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: rgb(var(--vf-surface-2));
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.heroPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.tryOnPill {
+  position: absolute;
+  right: clamp(0.75rem, 2vw, 1.15rem);
+  bottom: clamp(0.75rem, 2vw, 1.15rem);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.65rem;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid rgba(var(--vf-accent), 0.08);
+  border-radius: 999px;
+  background: rgb(255 255 255);
+  color: rgb(var(--vf-accent));
+  font-size: 0.748rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.tryOnPill:hover:not(:disabled) {
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+.tryOnPill:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.tryOnPill:disabled {
+  cursor: wait;
+  opacity: 0.85;
+}
+
+.tryOnIcon,
+.tryOnSpinner {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.85rem;
+  padding-top: 0.15rem;
+}
+
+.name {
+  margin: 0;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: clamp(1.1475rem, 2.04vw, 1.4875rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: rgb(var(--vf-accent));
+}
+
+.price {
+  margin: 0;
+  font-size: clamp(1.1475rem, 1.87vw, 1.4025rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.meta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.765rem;
+  color: rgb(var(--vf-border-strong));
+}
+
+.metaSep {
+  opacity: 0.7;
+}
+
+.addBtn {
+  margin-top: 0.35rem;
+  width: 100%;
+  min-height: 3.1rem;
+  border: none;
+  border-radius: 0;
+  background: rgb(var(--vf-accent));
+  color: rgb(var(--vf-accent-ink));
+  font-size: 0.697rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: not-allowed;
+  opacity: 0.92;
+}
+
+.trustCard {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(var(--vf-accent), 0.12);
+  background: rgb(var(--vf-bg-0));
+}
+
+.trustTitle {
+  margin: 0 0 0.25rem;
+  font-size: 0.782rem;
+  font-weight: 700;
+}
+
+.trustDetail {
+  margin: 0;
+  font-size: 0.697rem;
+  line-height: 1.4;
+  color: rgb(var(--vf-border-strong));
+}
+
+.trustGrid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.55rem;
+}
+
+.trustGrid li {
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgba(var(--vf-accent), 0.1);
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: rgb(var(--vf-accent));
+}
+
+.privacy {
+  margin: 0.15rem 0 0;
+  font-size: 0.612rem;
+  line-height: 1.4;
+  color: rgb(var(--vf-border-strong));
+}
+
+.error {
+  margin: 0;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: rgb(140 40 40);
+}
+
+.alts {
+  max-width: var(--pdp-max);
+  width: 100%;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.altsTitle,
+.detailsTitle {
+  margin: 0;
+  font-size: 0.612rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(var(--vf-border-strong));
+}
+
+.altsRail {
+  display: flex;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0.15rem 0 0.4rem;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.alt,
+.altActive {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: 7.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.45rem;
+  border: 1px solid transparent;
+  background: rgb(var(--vf-surface-2));
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease;
+}
+
+.altActive {
+  border-color: rgb(var(--vf-accent));
+  background: rgb(var(--vf-bg-0));
+}
+
+.altThumb {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  background: rgb(var(--vf-surface-2));
+}
+
+.altName {
+  font-size: 0.578rem;
+  line-height: 1.25;
+  font-weight: 600;
+  color: rgb(var(--vf-accent));
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.altPrice {
+  font-size: 0.578rem;
+  color: rgb(var(--vf-border-strong));
+}
+
+.details {
+  max-width: var(--pdp-max);
+  width: 100%;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid rgba(var(--vf-accent), 0.08);
+}
+
+.detailsBody {
+  margin: 0;
+  max-width: 42rem;
+  font-size: 0.782rem;
+  line-height: 1.55;
+  color: rgb(var(--vf-accent));
+}
+
+.detailsMaterial {
+  margin: 0;
+  font-size: 0.7225rem;
+  color: rgb(var(--vf-border-strong));
+}
+
+.detailsMaterialLabel {
+  font-weight: 700;
+  color: rgb(var(--vf-accent));
+}
+
+:global([data-display='mupi']) .page {
+  --pdp-pad-x: clamp(2rem, 4vw, 3.25rem);
+  --pdp-pad-y: clamp(1.75rem, 3vh, 3rem);
+  --pdp-max: none;
+  justify-content: space-between;
+  gap: clamp(2rem, 3vh, 3.5rem);
+}
+
+:global([data-display='mupi']) .pdp {
+  align-items: center;
+}
+
+:global([data-display='mupi']) .brandMark {
+  font-size: clamp(1.02rem, 1.36vw, 1.3175rem);
+}
+
+:global([data-display='mupi']) .name {
+  font-size: clamp(1.4025rem, 2.125vw, 1.87rem);
+}
+
+:global([data-display='mupi']) .tryOnPill,
+:global([data-display='mupi']) .addBtn {
+  min-height: max(4rem, var(--vf-touch-target-min));
+  font-size: clamp(0.8075rem, 0.935vw, 0.952rem);
+}
+
+:global([data-display='mupi']) .trustTitle,
+:global([data-display='mupi']) .detailsBody {
+  font-size: clamp(0.85rem, 0.9775vw, 1.003rem);
+}
+
+:global([data-display='mupi']) .trustDetail,
+:global([data-display='mupi']) .trustGrid li,
+:global([data-display='mupi']) .privacy {
+  font-size: clamp(0.731rem, 0.8075vw, 0.85rem);
+}
+
+:global([data-display='mupi']) .alt,
+:global([data-display='mupi']) .altActive {
+  width: clamp(8.5rem, 14vw, 10rem);
+  min-height: max(3.5rem, var(--vf-touch-target-min));
+}
+
+:global([data-display='mupi']) .altName,
+:global([data-display='mupi']) .altsTitle,
+:global([data-display='mupi']) .detailsTitle {
+  font-size: clamp(0.68rem, 0.765vw, 0.8075rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tryOnPill,
+  .alt,
+  .altActive {
+    transition: none;
+  }
+}

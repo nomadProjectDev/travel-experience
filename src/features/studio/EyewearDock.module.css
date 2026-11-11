@@ -1,0 +1,577 @@
+/*
+ * Eyewear PDP rail — stacked white cards on a light page wash.
+ * Recs are a single horizontal row (scroll on narrow), never a tall 2×2.
+ * Selected: PDP row (photo + type) then Escena in one block.
+ */
+
+.root {
+  --dock-ink: 17 17 17;
+  --dock-muted: 110 110 110;
+  --dock-wash: 245 245 245;
+  --dock-border: rgba(17, 17, 17, 0.12);
+  --dock-radius: 1.1rem;
+  --dock-gap: 0.75rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--dock-gap);
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  color: rgb(var(--dock-ink));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.panel {
+  flex-shrink: 0;
+  padding: 1rem 1.05rem 1.05rem;
+  border-radius: var(--dock-radius);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(17, 17, 17, 0.04);
+}
+
+.panelHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+}
+
+.panelTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.7rem;
+  font-size: 0.782rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: rgb(var(--dock-ink));
+}
+
+.panelHead .panelTitle {
+  margin-bottom: 0;
+}
+
+.sparkle {
+  width: 0.9rem;
+  height: 0.9rem;
+  color: rgb(var(--dock-ink));
+}
+
+.refreshLink {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 0.612rem;
+  font-weight: 600;
+  color: rgb(var(--dock-muted));
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.refreshLink:hover:not(:disabled) {
+  color: rgb(var(--dock-ink));
+}
+
+.refreshLink:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* —— Selected frame: PDP row (photo | type) then Escena —— */
+.selectedBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.selectedPdp {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.selectedMedia {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 16.5rem;
+  width: 16.5rem;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  padding: 0.55rem;
+  border-radius: 0.45rem;
+  background: rgb(var(--dock-wash));
+  overflow: hidden;
+}
+
+.selectedThumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.selectedBody {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
+  flex: 1 1 0;
+  min-width: 0;
+  padding-top: 0.1rem;
+}
+
+.gallery {
+  min-width: 0;
+  width: 100%;
+}
+
+.galleryTitle {
+  margin: 0 0 0.3rem;
+  font-size: 0.612rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: rgb(var(--dock-ink));
+}
+
+.galleryRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 0.1rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.galleryThumb {
+  position: relative;
+  flex: 0 0 3.5rem;
+  width: 3.5rem;
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  border: 1px solid var(--dock-border);
+  border-radius: 0.35rem;
+  overflow: hidden;
+  background: rgb(var(--dock-wash));
+  cursor: pointer;
+}
+
+.galleryThumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.galleryCaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.12rem 0.15rem;
+  font-size: 0.4675rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  text-align: center;
+  color: rgb(var(--dock-ink));
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.92) 35%
+  );
+}
+
+.galleryThumb:disabled {
+  cursor: default;
+}
+
+.galleryThumb:focus-visible {
+  outline: 2px solid rgb(var(--dock-ink));
+  outline-offset: 2px;
+}
+
+.galleryThumbActive {
+  border-color: rgb(var(--dock-ink));
+  box-shadow: 0 0 0 1px rgb(var(--dock-ink));
+}
+
+.galleryPending {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.galleryVideoBadge {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 0.28);
+  pointer-events: none;
+}
+
+.galleryVideoPlay {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: #fff;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.35));
+}
+
+.gallerySpinner {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.selectedName {
+  margin: 0;
+  font-size: clamp(1.02rem, 1.445vw, 1.2325rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.selectedPrice {
+  margin: 0;
+  font-size: clamp(0.952rem, 1.275vw, 1.122rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgb(var(--dock-ink));
+}
+
+.selectedMeta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.697rem;
+  font-weight: 500;
+  color: rgb(var(--dock-muted));
+}
+
+.metaSep {
+  opacity: 0.7;
+}
+
+.selectedBlurb {
+  margin: 0.2rem 0 0;
+  font-size: 0.68rem;
+  font-weight: 450;
+  line-height: 1.45;
+  color: rgb(var(--dock-ink));
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.onYouBadge {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.45rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 9999px;
+  background: rgb(var(--dock-ink));
+  color: #fff;
+}
+
+.onYouIcon {
+  width: 0.72rem;
+  height: 0.72rem;
+  stroke-width: 2.5;
+}
+
+/* Escena nested inside selected card */
+.selectedScene {
+  margin-top: 0.15rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--dock-border);
+}
+
+.sceneTitle {
+  margin: 0 0 0.55rem;
+  font-size: 0.697rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: rgb(var(--dock-ink));
+}
+
+/* —— Horizontal recommendations —— */
+.recRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  align-content: start;
+}
+
+.recCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.recCard:hover:not(:disabled) .recPlate {
+  background: rgb(236 236 236);
+}
+
+.recCard:focus-visible {
+  outline: 2px solid rgb(var(--dock-ink));
+  outline-offset: 2px;
+}
+
+.recCard:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.recPlate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: 0.4rem;
+  border-radius: 0.55rem;
+  background: rgb(var(--dock-wash));
+  overflow: hidden;
+  transition: background 0.15s ease;
+}
+
+.recThumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.recName {
+  font-size: 0.612rem;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recReason {
+  font-size: 0.527rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: rgb(var(--dock-muted));
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* —— Escena chips —— */
+.sceneRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.sceneChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.15rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--dock-border);
+  border-radius: 9999px;
+  background: #fff;
+  color: rgb(var(--dock-ink));
+  font-size: 0.612rem;
+  font-weight: 650;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sceneChipActive {
+  border-color: rgb(var(--dock-ink));
+  background: rgb(var(--dock-ink));
+  color: #fff;
+}
+
+.sceneChip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sceneIcon {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+}
+
+.sceneSpinner {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.sceneStatus {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+  font-size: 0.595rem;
+  color: rgb(var(--dock-muted));
+}
+
+.sceneLink {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 0.595rem;
+  font-weight: 700;
+  color: rgb(var(--dock-ink));
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* —— Footer CTAs —— */
+.footerActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  padding-bottom: calc(0.35rem + env(safe-area-inset-bottom, 0px));
+}
+
+.footerSecondary,
+.footerPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.9rem;
+  border-radius: 0.75rem;
+  font-size: 0.697rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.footerSecondary {
+  border: 1px solid rgba(17, 17, 17, 0.16);
+  background: #fff;
+  color: rgb(var(--dock-ink));
+}
+
+.footerPrimary {
+  border: none;
+  background: rgb(var(--dock-ink));
+  color: #fff;
+}
+
+.footerSecondary:disabled,
+.footerPrimary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.footerIcon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.error {
+  margin: 0;
+  flex-shrink: 0;
+  font-size: 0.612rem;
+  color: rgb(160, 40, 40);
+}
+
+@media (max-width: 767px) {
+  .root {
+    height: auto;
+    overflow: visible;
+    gap: 0.85rem;
+    padding: 0 0 calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .panel {
+    padding: 0.95rem 1rem 1rem;
+  }
+
+  .selectedPdp {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .selectedMedia {
+    flex-basis: min(16.5rem, 70vw);
+    width: min(16.5rem, 70vw);
+    padding: 0.65rem;
+  }
+
+  .selectedName {
+    font-size: 1.1475rem;
+  }
+
+  .selectedPrice {
+    font-size: 1.037rem;
+  }
+
+  /* Horizontal scroll row — no wrapping, no stretched 2×2 chasms. */
+  .recRow {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.65rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-bottom: 0.2rem;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .recCard {
+    flex: 0 0 6.5rem;
+    width: 6.5rem;
+    scroll-snap-align: start;
+  }
+
+  .footerActions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin-top: 0.25rem;
+    padding-top: 0.35rem;
+    background: linear-gradient(
+      180deg,
+      rgba(240, 240, 240, 0) 0%,
+      rgb(240, 240, 240) 28%
+    );
+  }
+}

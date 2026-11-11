@@ -1,0 +1,39 @@
+/**
+ * MVP premium retail skin — lifestyle sport / athleisure flagship store
+ */
+[data-theme='lifestyle-sport'] {
+  --vf-bg-0: 246 244 239;
+  --vf-bg-1: 251 250 246;
+  --vf-surface-1: 255 255 255;
+  --vf-surface-2: 241 239 233;
+  --vf-rail: 236 234 228;
+  --vf-border-soft: 35 40 48;
+  --vf-border-strong: 186 175 158;
+  --vf-text-strong: 18 22 32;
+  --vf-text: 45 52 64;
+  --vf-text-muted: 108 115 128;
+  --vf-text-subtle: 145 152 163;
+  --vf-accent: 18 22 32;
+  --vf-accent-strong: 9 12 20;
+  --vf-accent-ink: 248 246 242;
+  --vf-danger: 178 86 86;
+  --vf-danger-bg: 253 243 243;
+  --vf-success: 82 140 110;
+  --vf-focus: 196 230 75;
+  --vf-overlay: 12 16 24;
+  --vf-surface-glow: radial-gradient(
+    circle at 50% 32%,
+    rgba(196, 230, 75, 0.14) 0%,
+    rgba(255, 255, 255, 0.35) 28%,
+    transparent 68%
+  );
+  --vf-shadow-soft: 0 10px 28px rgba(18, 22, 32, 0.07);
+  --vf-shadow-premium: 0 18px 42px rgba(18, 22, 32, 0.12);
+  --vf-radius-sm: 0.75rem;
+  --vf-radius-md: 1rem;
+  --vf-radius-lg: 1.5rem;
+  --vf-motion-fast: 0.18s;
+  --vf-motion-base: 0.38s;
+  --vf-motion-slow: 0.58s;
+  --vf-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}

@@ -1,0 +1,15 @@
+/**
+ * Design-system entry — tokens, themes, app shell.
+ * Imported once from `src/app/globals.css` (see docs/STYLING.md).
+ */
+
+@import './tokens/primitives.css';
+@import './tokens/semantic.css';
+@import './themes/default.css';
+@import './themes/dark.css';
+@import './themes/lifestyle-sport.css';
+@import './kiosk-display.css';
+@import './studio-mupi.css';
+@import './app-shell.css';
+@import './themes/eyewear.css';
+@import './themes/navidad.css';

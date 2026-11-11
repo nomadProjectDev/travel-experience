@@ -1,0 +1,64 @@
+.root {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  border-width: 1px;
+  border-style: solid;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: var(--fs-body);
+  line-height: 1.25;
+  color: rgb(var(--text-primary));
+}
+
+.body {
+  margin-top: 0.25rem;
+  font-size: var(--fs-label);
+  color: rgb(var(--text-muted));
+  line-height: 1.4;
+}
+
+.indicator {
+  flex-shrink: 0;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+}
+
+.danger {
+  background-color: rgb(var(--color-danger-bg));
+  border-color: rgba(var(--color-danger), 0.45);
+}
+
+.danger .title {
+  color: rgb(var(--text-primary));
+}
+
+.danger .indicator {
+  background-color: rgb(var(--color-danger));
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.info {
+  background-color: rgba(var(--color-surface-muted), 0.5);
+  border-color: rgba(var(--color-border), 0.2);
+}
+
+.info .indicator {
+  background-color: rgb(var(--color-accent));
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

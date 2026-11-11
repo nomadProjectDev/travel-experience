@@ -1,0 +1,154 @@
+.rail {
+  flex-shrink: 0;
+  width: 100%;
+  min-inline-size: 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: clamp(0.35rem, 0.65vmin, 0.5rem);
+}
+
+.list > li {
+  flex: 1 1 0;
+  min-inline-size: 0;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  width: 100%;
+  min-inline-size: 0;
+  min-height: 3.25rem;
+  padding: 0.5rem 0.35rem 0.72rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color var(--motion-fast) var(--motion-ease),
+    background-color var(--motion-fast) var(--motion-ease);
+}
+
+.item::after {
+  content: '';
+  position: absolute;
+  inset-inline: 18%;
+  bottom: 0.28rem;
+  height: 2px;
+  border-radius: 1px;
+  background: rgb(var(--color-accent));
+  opacity: 0;
+  transform: scaleX(0.35);
+  transition:
+    opacity var(--motion-fast) var(--motion-ease),
+    transform var(--motion-fast) var(--motion-ease);
+}
+
+.itemIdle {
+  color: rgb(var(--text-muted));
+}
+
+.itemIdle:hover {
+  background: var(--glass-bg-muted);
+  color: rgb(var(--text-body));
+}
+
+.itemActive {
+  color: rgb(var(--text-body));
+  background: rgba(var(--color-accent), 0.1);
+}
+
+.itemActive::after {
+  opacity: 1;
+  transform: scaleX(1);
+  height: 3px;
+  bottom: 0.22rem;
+}
+
+.item:focus-visible {
+  outline: 2px solid rgb(var(--color-accent));
+  outline-offset: 2px;
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color var(--motion-fast) var(--motion-ease);
+}
+
+.icon {
+  width: clamp(1.2rem, 2.05vmin, 1.45rem);
+  height: clamp(1.2rem, 2.05vmin, 1.45rem);
+}
+
+.itemActive .iconWrap {
+  color: rgb(var(--color-accent));
+}
+
+.labelRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.28rem;
+  width: 100%;
+  min-inline-size: 0;
+  max-width: 100%;
+}
+
+.label {
+  font-size: clamp(0.629rem, 0.748vmin, 0.731rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.itemActive .label {
+  font-weight: 700;
+  color: rgb(var(--text-body));
+}
+
+.count {
+  flex-shrink: 0;
+  font-size: 0.527rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: rgb(var(--text-subtle));
+  font-variant-numeric: tabular-nums;
+}
+
+.itemActive .count {
+  color: rgb(var(--text-muted));
+}
+
+[data-display='mupi'] .item {
+  min-height: clamp(3.35rem, 4.6vmin, 4rem);
+  padding: 0.55rem 0.4rem 0.78rem;
+  gap: 0.45rem;
+}
+
+[data-display='mupi'] .icon {
+  width: clamp(1.28rem, 2.15vmin, 1.5rem);
+  height: clamp(1.28rem, 2.15vmin, 1.5rem);
+}
+
+[data-display='mupi'] .label {
+  font-size: clamp(0.663rem, 0.8075vmin, 0.765rem);
+}

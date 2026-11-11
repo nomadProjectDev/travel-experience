@@ -1,0 +1,29 @@
+/* Dark theme tokens (optional skin) */
+[data-theme='dark'] {
+  --vf-bg-0: 18 20 26;
+  --vf-bg-1: 24 27 34;
+  --vf-surface-1: 32 36 45;
+  --vf-surface-2: 40 45 56;
+  --vf-rail: 28 32 40;
+  --vf-border-soft: 220 225 235;
+  --vf-border-strong: 188 160 116;
+  --vf-text-strong: 248 246 242;
+  --vf-text: 210 214 222;
+  --vf-text-muted: 160 166 178;
+  --vf-text-subtle: 130 136 148;
+  --vf-accent: 247 244 239;
+  --vf-accent-strong: 255 255 255;
+  --vf-accent-ink: 18 20 26;
+  --vf-danger: 220 120 120;
+  --vf-danger-bg: 48 28 28;
+  --vf-success: 120 180 150;
+  --vf-focus: 188 160 116;
+  --vf-overlay: 8 10 14;
+  --vf-surface-glow: radial-gradient(
+    circle at 50% 38%,
+    rgba(255, 255, 255, 0.12) 0%,
+    transparent 65%
+  );
+  --vf-shadow-soft: 0 8px 22px rgba(0, 0, 0, 0.35);
+  --vf-shadow-premium: 0 14px 34px rgba(0, 0, 0, 0.45);
+}

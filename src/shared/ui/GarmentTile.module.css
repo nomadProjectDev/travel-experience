@@ -1,0 +1,180 @@
+.root {
+  position: relative;
+  width: 100%;
+  min-inline-size: 0;
+  min-height: 3.5rem;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--glass-border-subtle);
+  background: var(--glass-bg-muted);
+  box-shadow: var(--glass-inset-highlight), var(--shadow-soft);
+  backdrop-filter: blur(var(--glass-blur-xs));
+  -webkit-backdrop-filter: blur(var(--glass-blur-xs));
+  transition: transform var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) var(--motion-ease);
+}
+
+.root:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--glass-border-strong);
+  box-shadow: var(--glass-inset-highlight), var(--shadow-premium);
+}
+
+.root:disabled:not(.activeRing) {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.15);
+}
+
+.root:disabled.activeRing {
+  cursor: default;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--motion-base) var(--motion-ease);
+}
+
+.root:hover:not(:disabled) .image {
+  transform: scale(1.04);
+}
+
+.labelBar {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 1.55rem 0.58rem 0.58rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.22), transparent);
+  min-inline-size: 0;
+}
+
+.label {
+  margin: 0;
+  min-inline-size: 0;
+  color: white;
+  font-size: clamp(0.646rem, 0.697vmin, 0.765rem);
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  text-transform: none;
+  text-align: center;
+  line-height: 1.28;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.selectedOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.selectedBadge {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background: rgb(var(--color-accent));
+  color: rgb(var(--color-accent-ink));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selectedText {
+  font-size: 0.612rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgb(var(--text-primary));
+}
+
+.activeRing {
+  box-shadow: 0 0 0 2px rgb(var(--color-accent));
+  border-color: rgba(var(--color-accent), 0.5);
+  transform: scale(1.02);
+}
+
+/* Studio rail: image + solid caption (readable at 1–2 m) */
+.rootStacked {
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rootStacked .image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.rootStacked .labelBar {
+  position: relative;
+  inset: auto;
+  flex: 0 0 auto;
+  padding: clamp(0.62rem, 0.85vmin, 0.75rem) clamp(0.68rem, 0.9vmin, 0.82rem);
+  background: var(--glass-bg-solid);
+  border-top: 1px solid var(--glass-border-subtle);
+}
+
+.rootStacked .label {
+  color: rgb(var(--text-body));
+  text-align: left;
+  text-shadow: none;
+}
+
+:global([data-display='mupi']) .rootStacked .label {
+  font-size: clamp(0.731rem, 0.8925vmin, 0.867rem);
+  font-weight: 650;
+  line-height: 1.32;
+}
+
+.rootStacked:hover:not(:disabled) {
+  transform: none;
+}
+
+.rootStacked:hover:not(:disabled) .image {
+  transform: scale(1.02);
+}
+
+.activeRingStacked {
+  transform: none;
+  box-shadow: var(--glass-inset-highlight), var(--shadow-premium);
+}
+
+.activeRingStacked .labelBar {
+  background: rgba(var(--color-accent), 0.08);
+  border-top-color: rgba(var(--color-accent), 0.22);
+}
+
+.rootStacked .selectedOverlay {
+  inset: 0 0 auto;
+  aspect-ratio: 4 / 3;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.rootStacked .selectedText {
+  font-size: clamp(0.578rem, 0.663vmin, 0.646rem);
+}
+
+[data-display='mupi'] .root {
+  min-height: clamp(3.5rem, 4.8vmin, 4.25rem);
+}
+
+[data-display='mupi'] .label {
+  font-size: clamp(0.68rem, 0.8075vmin, 0.85rem);
+  line-height: 1.3;
+}

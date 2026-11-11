@@ -1,0 +1,32 @@
+/**
+ * Christmas claymation kiosk skin. Felt green, cranberry, cream clay.
+ */
+[data-theme='navidad'] {
+  --vf-bg-0: 20 56 44;
+  --vf-bg-1: 194 58 50;
+  --vf-surface-1: 255 246 232;
+  --vf-surface-2: 226 179 58;
+  --vf-rail: 20 56 44;
+  --vf-border-soft: 60 36 24;
+  --vf-border-strong: 60 36 24;
+  --vf-text-strong: 255 246 232;
+  --vf-text: 255 246 232;
+  --vf-text-muted: 255 220 196;
+  --vf-text-subtle: 226 179 58;
+  --vf-accent: 194 58 50;
+  --vf-accent-strong: 226 179 58;
+  --vf-accent-ink: 60 36 24;
+  --vf-danger: 194 58 50;
+  --vf-danger-bg: 255 228 220;
+  --vf-success: 27 107 69;
+  --vf-focus: 226 179 58;
+  --vf-overlay: 18 32 26;
+  --vf-surface-glow: none;
+  --vf-shadow-soft: 0 10px 0 rgb(60 36 24 / 0.28);
+  --vf-shadow-premium: 0 14px 0 rgb(60 36 24 / 0.22);
+  --vf-radius-sm: 1.1rem;
+  --vf-radius-md: 1.6rem;
+  --vf-radius-lg: 2.2rem;
+  --touch-target: 3rem;
+  --vf-font-display: 'Fredoka', 'Manrope', sans-serif;
+}

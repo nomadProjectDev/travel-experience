@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://web-try-on.local/schemas/face-fit-dataset/v1",
+  "title": "Anonymous face-fit calibration dataset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["datasetSchemaVersion", "datasetKind", "records"],
+  "properties": {
+    "datasetSchemaVersion": { "enum": ["1.0.0", "2.0.0"] },
+    "datasetKind": { "enum": ["example", "study"] },
+    "description": { "type": "string" },
+    "records": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/record" }
+    }
+  },
+  "$defs": {
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "participantAnonId",
+        "sessionId",
+        "captureId",
+        "split",
+        "session",
+        "condition",
+        "results"
+      ],
+      "properties": {
+        "participantAnonId": { "$ref": "#/$defs/anonymousId" },
+        "sessionId": { "$ref": "#/$defs/id" },
+        "captureId": { "$ref": "#/$defs/id" },
+        "split": { "enum": ["calibration", "test"] },
+        "session": { "$ref": "#/$defs/session" },
+        "condition": { "$ref": "#/$defs/condition" },
+        "groundTruth": { "$ref": "#/$defs/groundTruth" },
+        "results": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/result" }
+        }
+      }
+    },
+    "anonymousId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,64}$",
+      "description": "Study-local pseudonymous identifier; never a name, email, phone, or device identifier."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.:-]{1,128}$"
+    },
+    "nonNegativeNumber": { "type": "number", "minimum": 0 },
+    "positiveNumber": { "type": "number", "exclusiveMinimum": 0 },
+    "nullableNonNegativeNumber": { "type": ["number", "null"], "minimum": 0 },
+    "nullablePositiveNumber": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deviceModel", "deviceCategory", "browser", "resolution"],
+      "properties": {
+        "deviceModel": { "type": "string", "minLength": 1 },
+        "deviceCategory": { "enum": ["phone", "tablet", "laptop", "desktop", "other"] },
+        "browser": { "type": "string", "minLength": 1 },
+        "resolution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width", "height"],
+          "properties": {
+            "width": { "type": "integer", "minimum": 1 },
+            "height": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["distanceBucket", "lighting", "poseTarget", "eyewearPresent"],
+      "properties": {
+        "distanceBucket": { "enum": ["near", "target", "far"] },
+        "lighting": { "enum": ["low", "indoor", "bright", "backlit"] },
+        "poseTarget": { "enum": ["frontal", "yaw-left", "yaw-right", "pitch-up", "pitch-down"] },
+        "eyewearPresent": { "type": "boolean" }
+      }
+    },
+    "groundTruth": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "binocularPdMm": { "$ref": "#/$defs/positiveNumber" },
+        "monocularPdMm": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["left", "right"],
+          "properties": {
+            "left": { "$ref": "#/$defs/positiveNumber" },
+            "right": { "$ref": "#/$defs/positiveNumber" }
+          }
+        },
+        "faceWidthMm": { "$ref": "#/$defs/positiveNumber" },
+        "maximumFaceWidth": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value", "unit", "method", "tool", "repeatCount"],
+          "properties": {
+            "value": { "$ref": "#/$defs/positiveNumber" },
+            "unit": { "const": "mm" },
+            "method": {
+              "enum": ["bizygomatic-caliper", "maximum-face-width-tape", "other"]
+            },
+            "tool": { "type": "string", "minLength": 1 },
+            "repeatCount": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "templeDistanceMm": { "$ref": "#/$defs/positiveNumber" },
+        "comfortableFrameMeasurements": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sizeLabel": { "enum": ["S", "M", "L"] },
+            "lensWidthMm": { "$ref": "#/$defs/positiveNumber" },
+            "bridgeMm": { "$ref": "#/$defs/positiveNumber" },
+            "templeMm": { "$ref": "#/$defs/positiveNumber" },
+            "frameWidthMm": { "$ref": "#/$defs/positiveNumber" }
+          }
+        },
+        "opticianFitLabel": { "enum": ["S", "M", "L", "too-small", "good", "too-large"] }
+      },
+      "minProperties": 1
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calibrationMethod",
+        "modelVersion",
+        "pipelineSchemaVersion",
+        "thresholdConfigVersion",
+        "calibrationVersion",
+        "irisDiametersPx",
+        "poseDeg",
+        "faceOccupancy",
+        "quality",
+        "readiness",
+        "runtime"
+      ],
+      "properties": {
+        "calibrationMethod": { "enum": ["iris-prior", "known-card"] },
+        "modelVersion": { "type": "string", "minLength": 1 },
+        "pipelineSchemaVersion": { "type": "string", "minLength": 1 },
+        "thresholdConfigVersion": { "type": "string", "minLength": 1 },
+        "calibrationVersion": { "type": "string", "minLength": 1 },
+        "outputRatios": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ipdToFaceWidth", "canthiToFaceWidth"],
+          "properties": {
+            "ipdToFaceWidth": { "$ref": "#/$defs/nonNegativeNumber" },
+            "canthiToFaceWidth": { "$ref": "#/$defs/nonNegativeNumber" },
+            "bridgeToIpd": { "$ref": "#/$defs/nonNegativeNumber" }
+          }
+        },
+        "estimatesMm": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "binocularPdMm": { "$ref": "#/$defs/positiveNumber" },
+            "faceWidthMm": { "$ref": "#/$defs/positiveNumber" },
+            "templeDistanceMm": { "$ref": "#/$defs/positiveNumber" }
+          },
+          "minProperties": 1
+        },
+        "experimentalFaceSize": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method", "status", "confidence", "reasons"],
+          "properties": {
+            "method": { "const": "iris-scale-v1" },
+            "status": { "enum": ["usable", "rejected"] },
+            "confidence": { "enum": ["low", "medium", "high"] },
+            "reasons": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            },
+            "estimatedFaceWidthMm": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["min", "max"],
+              "properties": {
+                "min": { "$ref": "#/$defs/positiveNumber" },
+                "max": { "$ref": "#/$defs/positiveNumber" }
+              }
+            },
+            "centralEstimateMm": { "$ref": "#/$defs/positiveNumber" }
+          }
+        },
+        "predictedSizeLabel": { "enum": ["S", "M", "L"] },
+        "irisDiametersPx": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["left", "right", "mean"],
+          "properties": {
+            "left": { "$ref": "#/$defs/nullablePositiveNumber" },
+            "right": { "$ref": "#/$defs/nullablePositiveNumber" },
+            "mean": { "$ref": "#/$defs/nullablePositiveNumber" }
+          }
+        },
+        "poseDeg": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["yaw", "pitch", "roll"],
+          "properties": {
+            "yaw": { "type": ["number", "null"] },
+            "pitch": { "type": ["number", "null"] },
+            "roll": { "type": ["number", "null"] }
+          }
+        },
+        "faceOccupancy": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "quality": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "reasons"],
+          "properties": {
+            "status": { "enum": ["ready", "rejected", "insufficient"] },
+            "reasons": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            }
+          }
+        },
+        "readiness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["framesToReady", "timeToReadyMs"],
+          "properties": {
+            "framesToReady": { "type": ["integer", "null"], "minimum": 0 },
+            "timeToReadyMs": { "type": ["number", "null"], "minimum": 0 }
+          }
+        },
+        "runtime": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["delegate", "latencyMs"],
+          "properties": {
+            "delegate": { "enum": ["GPU", "CPU", null] },
+            "latencyMs": { "$ref": "#/$defs/nullableNonNegativeNumber" }
+          }
+        }
+      }
+    }
+  }
+}

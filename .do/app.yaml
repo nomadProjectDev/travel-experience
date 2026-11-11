@@ -1,0 +1,51 @@
+# DigitalOcean App Platform — Taller de Barro (navidad live claymation effects MUPI)
+# Fill SECRET values in the dashboard. VITE_KIOSK_API_KEY (BUILD) MUST equal API_KEY (RUN).
+name: navidad-mupi
+region: ams
+services:
+  - name: web
+    source_dir: /
+    github:
+      repo: nomadProjectDev/navidad
+      branch: main
+      deploy_on_push: true
+    environment_slug: node-js
+    build_command: npm ci --include=dev && npm run build
+    run_command: npm start
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb
+    health_check:
+      http_path: /api/health
+      initial_delay_seconds: 10
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+    envs:
+      - key: NODE_ENV
+        value: production
+        scope: RUN_TIME
+      - key: NODE_VERSION
+        value: "22"
+        scope: BUILD_TIME
+      # Do not set NODE_ENV at BUILD_TIME — App Platform would skip vite (devDependency).
+      - key: VITE_CLIENT_ID
+        value: navidad
+        scope: BUILD_TIME
+      - key: VITE_CAMERA_ROTATION_DEG
+        value: "0"
+        scope: BUILD_TIME
+      - key: VITE_KIOSK_API_KEY
+        type: SECRET
+        scope: BUILD_TIME
+      # Runtime — API_KEY must match VITE_KIOSK_API_KEY; server refuses start without API_KEY in production
+      - key: API_KEY
+        type: SECRET
+        scope: RUN_TIME
+      - key: DECART_API_KEY
+        type: SECRET
+        scope: RUN_TIME
+      - key: API_RATE_LIMIT_MAX
+        value: "60"
+        scope: RUN_TIME

@@ -1,0 +1,24 @@
+.root {
+  background-color: rgb(var(--color-surface));
+  border: 1px solid rgba(var(--color-border), 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.glass {
+  background: rgba(var(--color-surface), 0.72);
+  backdrop-filter: blur(18px);
+  border-color: rgba(var(--color-border), 0.12);
+}
+
+.matte {
+  background-color: rgb(var(--color-surface-muted));
+}
+
+.paddingMd {
+  padding: 1.25rem 1.5rem;
+}
+
+.paddingLg {
+  padding: 1.75rem 2rem;
+}

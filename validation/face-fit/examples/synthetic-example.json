@@ -1,0 +1,131 @@
+{
+  "datasetSchemaVersion": "1.0.0",
+  "datasetKind": "example",
+  "description": "SYNTHETIC EXAMPLE ONLY. Values are invented to exercise the harness and are not empirical evidence.",
+  "records": [
+    {
+      "participantAnonId": "example-p001",
+      "sessionId": "example-s001",
+      "captureId": "example-c001",
+      "split": "calibration",
+      "session": {
+        "deviceModel": "Synthetic Phone A",
+        "deviceCategory": "phone",
+        "browser": "Synthetic Browser 1",
+        "resolution": { "width": 1280, "height": 720 }
+      },
+      "condition": {
+        "distanceBucket": "target",
+        "lighting": "indoor",
+        "poseTarget": "frontal",
+        "eyewearPresent": false
+      },
+      "groundTruth": {
+        "binocularPdMm": 63,
+        "faceWidthMm": 142,
+        "templeDistanceMm": 139,
+        "comfortableFrameMeasurements": {
+          "sizeLabel": "M",
+          "lensWidthMm": 51,
+          "bridgeMm": 18,
+          "templeMm": 145,
+          "frameWidthMm": 140
+        },
+        "opticianFitLabel": "good"
+      },
+      "results": [
+        {
+          "calibrationMethod": "iris-prior",
+          "modelVersion": "synthetic-model-v1",
+          "pipelineSchemaVersion": "1.0.0",
+          "thresholdConfigVersion": "synthetic-thresholds-v1",
+          "calibrationVersion": "synthetic-iris-v1",
+          "outputRatios": {
+            "ipdToFaceWidth": 0.444,
+            "canthiToFaceWidth": 0.62,
+            "bridgeToIpd": 0.27
+          },
+          "estimatesMm": {
+            "binocularPdMm": 64.2,
+            "faceWidthMm": 144.6,
+            "templeDistanceMm": 140.3
+          },
+          "predictedSizeLabel": "M",
+          "irisDiametersPx": { "left": 21.1, "right": 20.9, "mean": 21 },
+          "poseDeg": { "yaw": 1.2, "pitch": -0.8, "roll": 0.4 },
+          "faceOccupancy": 0.42,
+          "quality": { "status": "ready", "reasons": [] },
+          "readiness": { "framesToReady": 12, "timeToReadyMs": 410 },
+          "runtime": { "delegate": "GPU", "latencyMs": 18.4 }
+        },
+        {
+          "calibrationMethod": "known-card",
+          "modelVersion": "synthetic-model-v1",
+          "pipelineSchemaVersion": "1.0.0",
+          "thresholdConfigVersion": "synthetic-thresholds-v1",
+          "calibrationVersion": "synthetic-card-v1",
+          "outputRatios": {
+            "ipdToFaceWidth": 0.444,
+            "canthiToFaceWidth": 0.62,
+            "bridgeToIpd": 0.27
+          },
+          "estimatesMm": {
+            "binocularPdMm": 63.4,
+            "faceWidthMm": 142.8,
+            "templeDistanceMm": 139.5
+          },
+          "predictedSizeLabel": "M",
+          "irisDiametersPx": { "left": 21.1, "right": 20.9, "mean": 21 },
+          "poseDeg": { "yaw": 1.2, "pitch": -0.8, "roll": 0.4 },
+          "faceOccupancy": 0.42,
+          "quality": { "status": "ready", "reasons": [] },
+          "readiness": { "framesToReady": 12, "timeToReadyMs": 410 },
+          "runtime": { "delegate": "GPU", "latencyMs": 18.4 }
+        }
+      ]
+    },
+    {
+      "participantAnonId": "example-p001",
+      "sessionId": "example-s001",
+      "captureId": "example-c002",
+      "split": "calibration",
+      "session": {
+        "deviceModel": "Synthetic Phone A",
+        "deviceCategory": "phone",
+        "browser": "Synthetic Browser 1",
+        "resolution": { "width": 1280, "height": 720 }
+      },
+      "condition": {
+        "distanceBucket": "far",
+        "lighting": "low",
+        "poseTarget": "yaw-left",
+        "eyewearPresent": false
+      },
+      "results": [
+        {
+          "calibrationMethod": "iris-prior",
+          "modelVersion": "synthetic-model-v1",
+          "pipelineSchemaVersion": "1.0.0",
+          "thresholdConfigVersion": "synthetic-thresholds-v1",
+          "calibrationVersion": "synthetic-iris-v1",
+          "outputRatios": {
+            "ipdToFaceWidth": 0.451,
+            "canthiToFaceWidth": 0.631,
+            "bridgeToIpd": 0.274
+          },
+          "estimatesMm": {
+            "binocularPdMm": 65.1,
+            "faceWidthMm": 144.3
+          },
+          "predictedSizeLabel": "M",
+          "irisDiametersPx": { "left": 12.2, "right": 11.8, "mean": 12 },
+          "poseDeg": { "yaw": -19.4, "pitch": 0.7, "roll": -1.1 },
+          "faceOccupancy": 0.2,
+          "quality": { "status": "rejected", "reasons": ["yaw-out-of-range", "face-too-small"] },
+          "readiness": { "framesToReady": null, "timeToReadyMs": null },
+          "runtime": { "delegate": "GPU", "latencyMs": 17.9 }
+        }
+      ]
+    }
+  ]
+}

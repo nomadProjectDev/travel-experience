@@ -1,0 +1,15 @@
+.railTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.9775rem, 1.1475vmin, 1.122rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgb(var(--text-body));
+  line-height: 1.15;
+  margin: 0;
+}
+
+:global([data-display='mupi']) .railTitle {
+  font-size: clamp(1.088rem, 1.428vmin, 1.292rem);
+  letter-spacing: 0.012em;
+  line-height: 1.12;
+}
