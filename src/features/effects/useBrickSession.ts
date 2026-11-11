@@ -110,6 +110,9 @@ export function useBrickSession() {
     const run = ++runRef.current;
     const effect = getClayEffect(DEFAULT_CLAY_EFFECT_ID);
     setIsOpeningCamera(true);
+    disconnectDecartEffectsSession();
+    releaseLocal(localStreamRef.current);
+    setLocalStream(null);
     errorRef.current = null;
     setError(null);
     setRemoteStream(null);

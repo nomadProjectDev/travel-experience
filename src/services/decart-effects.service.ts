@@ -155,7 +155,6 @@ async function waitForRemote(
 async function openSession(
   options: ConnectDecartEffectsOptions,
   epoch: number,
-  preferredVideoCodec?: 'vp8',
 ): Promise<{ client: RealTimeClient; remoteReceived: () => boolean }> {
   const useFastMode = import.meta.env.VITE_DECART_SPEED?.trim() === 'fast';
   let remoteReceived = false;
@@ -163,14 +162,12 @@ async function openSession(
 
   devLog('connect', {
     effectId: options.effect.id,
-    codec: preferredVideoCodec ?? 'default',
     speed: useFastMode ? 'fast' : 'standard',
   });
 
   const rtClient = await decartClient.realtime.connect(options.localStream, {
     model: effectsModel,
     mirror: false,
-    ...(preferredVideoCodec ? { preferredVideoCodec } : {}),
     ...(useFastMode ? { speed: 'fast' as const } : {}),
     onRemoteStream: (remoteStream) => {
       remoteReceived = true;
@@ -224,24 +221,7 @@ export async function connectDecartEffectsSession(
   }
 
   const first = await openSession(options, epoch);
-  if (first.remoteReceived() || epoch !== sessionEpoch) {
-    return first.client;
-  }
-
-  devLog('no remote after first connect; retrying with vp8');
-  try {
-    first.client.disconnect();
-  } catch {
-    /* ignore */
-  }
-  if (activeRealtimeClient === first.client) activeRealtimeClient = null;
-  await sleep(250);
-  if (epoch !== sessionEpoch) {
-    throw new Error('Decart effects connect cancelled');
-  }
-
-  const second = await openSession(options, epoch, 'vp8');
-  return second.client;
+  return first.client;
 }
 
 export async function setClayEffectPrompt(effect: ClayEffect): Promise<void> {
