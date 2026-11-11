@@ -256,30 +256,6 @@
   transform: scaleX(-1);
 }
 
-.video.videoQuarter {
-  inset: auto;
-  top: 50%;
-  left: 50%;
-  width: 100cqb;
-  height: 100cqi;
-  max-width: none;
-  max-height: none;
-  object-fit: contain;
-  transform: translate(-50%, -50%) rotate(var(--camera-rotation));
-}
-
-.video.videoQuarter.videoMirrored {
-  transform: translate(-50%, -50%) rotate(var(--camera-rotation)) scaleX(-1);
-}
-
-.videoHalfTurn {
-  transform: rotate(180deg);
-}
-
-.videoHalfTurn.videoMirrored {
-  transform: rotate(180deg) scaleX(-1);
-}
-
 .stageChrome {
   position: absolute;
   z-index: 2;

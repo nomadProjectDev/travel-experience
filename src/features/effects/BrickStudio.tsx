@@ -3,11 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getCopy } from '@config';
 import {
   CAMERA_ROTATION_ANGLES,
-  isQuarterTurnRotation,
   nextCameraRotationDeg,
   resolveCameraRotationDeg,
   saveCameraRotationDeg,
@@ -33,7 +32,6 @@ function BrickStudio() {
 
   const showRemote = Boolean(session.remoteStream);
   const preview = session.remoteStream ?? session.localStream;
-  const quarterTurnLive = isQuarterTurnRotation(cameraRotationDeg);
 
   const rotateCamera = useCallback(
     (explicit?: CameraRotationDeg) => {
@@ -112,7 +110,7 @@ function BrickStudio() {
 
   const handleStartLive = () => {
     setShowRotationPill(false);
-    void session.start();
+    void session.start(cameraRotationDeg);
   };
 
   useEffect(() => {
@@ -230,17 +228,8 @@ function BrickStudio() {
           ref={videoRef}
           className={cn(
             styles.video,
-            quarterTurnLive && styles.videoQuarter,
-            cameraRotationDeg === 180 && styles.videoHalfTurn,
             !showRemote && styles.videoMirrored,
           )}
-          style={
-            quarterTurnLive
-              ? ({
-                  ['--camera-rotation']: `${cameraRotationDeg}deg`,
-                } as CSSProperties)
-              : undefined
-          }
           autoPlay
           muted
           playsInline
@@ -260,7 +249,7 @@ function BrickStudio() {
         {session.error ? (
           <div className={styles.stageError} role="alert">
             <p>{session.error}</p>
-            <button type="button" className={styles.cta} onClick={() => void session.start()}>
+            <button type="button" className={styles.cta} onClick={() => void session.start(cameraRotationDeg)}>
               {studio.retry}
             </button>
           </div>

@@ -10,8 +10,14 @@ import {
   type ClayEffect,
 } from '@config/clients/navidad/effects';
 import { getCopy } from '@config';
-import { parseUserMediaError, stopCameraStream } from '@/shared/lib/camera';
+import type { CameraRotationDeg } from '@/core/media/cameraRotation';
 import {
+  createOrientedCameraStream,
+  parseUserMediaError,
+  stopCameraStream,
+} from '@/shared/lib/camera';
+import {
+  DECART_EFFECTS_STREAM_FORMAT,
   connectDecartEffectsSession,
   disconnectDecartEffectsSession,
   requestEffectsCameraStream,
@@ -99,7 +105,7 @@ export function useBrickSession() {
     };
   }, [clearWatchdog, releaseLocal]);
 
-  const start = useCallback(async () => {
+  const start = useCallback(async (cameraRotationDeg: CameraRotationDeg = 0) => {
     if (isOpeningCamera) return;
     const run = ++runRef.current;
     const effect = getClayEffect(DEFAULT_CLAY_EFFECT_ID);
@@ -109,13 +115,38 @@ export function useBrickSession() {
     setRemoteStream(null);
     setActiveEffectId(effect.id);
 
-    let stream: MediaStream;
+    let rawStream: MediaStream;
     try {
-      stream = await requestEffectsCameraStream();
+      rawStream = await requestEffectsCameraStream();
     } catch (err) {
       if (run !== runRef.current) return;
       setIsOpeningCamera(false);
       reportError(parseUserMediaError(err).message);
+      setPhase('landing');
+      return;
+    }
+
+    if (run !== runRef.current) {
+      stopCameraStream(rawStream);
+      return;
+    }
+
+    let stream: MediaStream;
+    try {
+      stream = await createOrientedCameraStream(
+        rawStream,
+        cameraRotationDeg,
+        DECART_EFFECTS_STREAM_FORMAT,
+      );
+    } catch (err) {
+      stopCameraStream(rawStream);
+      if (run !== runRef.current) return;
+      setIsOpeningCamera(false);
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'No se pudo orientar la cámara para el efecto en vivo.';
+      reportError(message);
       setPhase('landing');
       return;
     }
