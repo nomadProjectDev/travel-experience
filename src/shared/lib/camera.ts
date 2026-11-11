@@ -190,10 +190,11 @@ export async function createOrientedCameraStream(
   rotationDeg: CameraRotationDeg,
   options: { width: number; height: number; frameRate: number },
 ): Promise<MediaStream> {
+  if (rotationDeg === 0) return sourceStream;
+
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d', { alpha: false });
   if (!context || typeof canvas.captureStream !== 'function') {
-    if (rotationDeg === 0) return sourceStream;
     stopCameraStream(sourceStream);
     throw new Error('This browser cannot rotate the camera stream for live effects');
   }
@@ -208,7 +209,7 @@ export async function createOrientedCameraStream(
   await video.play();
   await waitForVideoMetadata(video);
 
-  let activeRotation = rotationDeg;
+  let activeRotation: CameraRotationDeg = rotationDeg;
   let animationFrame = 0;
   let disposed = false;
   const draw = () => {

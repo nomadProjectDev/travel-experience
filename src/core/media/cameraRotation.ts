@@ -1,4 +1,4 @@
-export const CAMERA_ROTATION_STORAGE_KEY = 'web_try_on_camera_rotation_deg';
+export const CAMERA_ROTATION_STORAGE_KEY = 'web_try_on_camera_rotation_deg_v2';
 export const CAMERA_ROTATION_ANGLES = [0, 90, 180, 270] as const;
 
 export type CameraRotationDeg = (typeof CAMERA_ROTATION_ANGLES)[number];
