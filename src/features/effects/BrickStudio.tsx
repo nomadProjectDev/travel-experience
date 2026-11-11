@@ -8,8 +8,6 @@ import { getCopy } from '@config';
 import {
   CAMERA_ROTATION_ANGLES,
   nextCameraRotationDeg,
-  resolveCameraRotationDeg,
-  saveCameraRotationDeg,
   type CameraRotationDeg,
 } from '@/core/media/cameraRotation';
 import CameraRotationButton from '@/shared/ui/CameraRotationButton';
@@ -23,9 +21,8 @@ function BrickStudio() {
   const studio = copy.brickStudio;
   const session = useBrickSession();
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [cameraRotationDeg, setCameraRotationDeg] = useState(
-    resolveCameraRotationDeg,
-  );
+  const [cameraRotationDeg, setCameraRotationDeg] =
+    useState<CameraRotationDeg>(0);
   const [showRotationPill, setShowRotationPill] = useState(false);
   const techTapTimestampsRef = useRef<number[]>([]);
   const rotationPillTimerRef = useRef<number | null>(null);
@@ -37,7 +34,7 @@ function BrickStudio() {
     (explicit?: CameraRotationDeg) => {
       if (session.phase !== 'landing') return;
       const nextRotation = explicit ?? nextCameraRotationDeg(cameraRotationDeg);
-      setCameraRotationDeg(saveCameraRotationDeg(nextRotation));
+      setCameraRotationDeg(nextRotation);
     },
     [cameraRotationDeg, session.phase],
   );

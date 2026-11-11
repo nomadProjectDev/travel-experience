@@ -1,5 +1,23 @@
 import { describe, expect, it, vi } from 'vitest';
-import { stopCameraStream, usesSummitMupiCameraLayout } from './camera';
+import {
+  createOrientedCameraStream,
+  stopCameraStream,
+  usesSummitMupiCameraLayout,
+} from './camera';
+
+describe('createOrientedCameraStream', () => {
+  it('keeps the native camera stream unchanged at zero rotation', async () => {
+    const stream = {} as MediaStream;
+
+    await expect(
+      createOrientedCameraStream(stream, 0, {
+        width: 1280,
+        height: 720,
+        frameRate: 30,
+      }),
+    ).resolves.toBe(stream);
+  });
+});
 
 describe('usesSummitMupiCameraLayout', () => {
   it('defaults to upright web camera when env unset', () => {
