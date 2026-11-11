@@ -7,7 +7,6 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
 import { getCopy } from '@config';
 import {
   CAMERA_ROTATION_ANGLES,
-  decartRemoteFrameScale,
   isQuarterTurnRotation,
   nextCameraRotationDeg,
   resolveCameraRotationDeg,
@@ -16,7 +15,6 @@ import {
 } from '@/core/media/cameraRotation';
 import CameraRotationButton from '@/shared/ui/CameraRotationButton';
 import { cn } from '@/shared/lib/utils';
-import { DECART_EFFECTS_STREAM_FORMAT } from '@/services/decart-effects.service';
 import EffectRail from './EffectRail';
 import { useBrickSession } from './useBrickSession';
 import styles from './BrickStudio.module.css';
@@ -114,7 +112,7 @@ function BrickStudio() {
 
   const handleStartLive = () => {
     setShowRotationPill(false);
-    void session.start(cameraRotationDeg);
+    void session.start();
   };
 
   useEffect(() => {
@@ -225,11 +223,6 @@ function BrickStudio() {
         ? studio.switching
         : null;
 
-  const remoteScale = decartRemoteFrameScale(
-    DECART_EFFECTS_STREAM_FORMAT.width,
-    DECART_EFFECTS_STREAM_FORMAT.height,
-  );
-
   return (
     <div className={styles.studio}>
       <section className={styles.stage} aria-label={studio.liveBadge}>
@@ -238,12 +231,13 @@ function BrickStudio() {
           className={cn(
             styles.video,
             quarterTurnLive && styles.videoQuarter,
+            cameraRotationDeg === 180 && styles.videoHalfTurn,
             !showRemote && styles.videoMirrored,
           )}
           style={
             quarterTurnLive
               ? ({
-                  ['--remote-frame-scale']: String(remoteScale),
+                  ['--camera-rotation']: `${cameraRotationDeg}deg`,
                 } as CSSProperties)
               : undefined
           }
@@ -266,7 +260,7 @@ function BrickStudio() {
         {session.error ? (
           <div className={styles.stageError} role="alert">
             <p>{session.error}</p>
-            <button type="button" className={styles.cta} onClick={() => void session.start(cameraRotationDeg)}>
+            <button type="button" className={styles.cta} onClick={() => void session.start()}>
               {studio.retry}
             </button>
           </div>
