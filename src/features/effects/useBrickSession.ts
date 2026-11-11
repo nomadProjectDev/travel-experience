@@ -32,10 +32,10 @@ const REMOTE_WATCHDOG_MS = 22_000;
 function friendlyDecartError(message: string): string {
   const lower = message.toLowerCase();
   if (lower.includes('insufficient credits')) {
-    return 'La cuenta de Decart no tiene créditos. Recárgala para ver el efecto en vivo.';
+    return 'El servicio en vivo no tiene créditos disponibles en este momento.';
   }
   if (lower.includes('missing decart_api_key') || lower.includes('no apikey')) {
-    return 'Falta la clave de Decart en el servidor.';
+    return 'Falta configurar el servicio en vivo en el servidor.';
   }
   if (lower.includes('stale connect')) {
     return 'La conexión se cortó al empezar. Pulsa Reintentar.';

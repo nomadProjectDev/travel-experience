@@ -147,6 +147,7 @@ describe('client pack isolation', () => {
     expect(manifest.copy.brickStudio?.restylesTitle).toBe('Personajes');
     expect(manifest.copy.brickStudio?.railHint).toMatch(/plastilina/);
     expect(manifest.copy.landing.titleLine2).toMatch(/plastilina/i);
+    expect(JSON.stringify(manifest.copy)).not.toMatch(/lucy|decart/i);
     expect(manifest.copy.landing.ctaLabel).toBe('Empezar');
     expect(CLAY_EFFECTS.length).toBeGreaterThanOrEqual(8);
   });

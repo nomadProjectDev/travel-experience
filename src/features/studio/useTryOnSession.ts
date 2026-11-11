@@ -810,7 +810,7 @@ export function useTryOnSession() {
             setIsLoading(false);
             setLoadingMessage('');
             if (reason === 'session_limit') {
-              setError('Se alcanzó el límite de sesiones simultáneas de Decart.');
+              setError('Se alcanzó el límite de sesiones simultáneas en vivo.');
             } else {
               setError('La sesión en vivo ha finalizado. Pulsa volver para reconectar.');
             }
