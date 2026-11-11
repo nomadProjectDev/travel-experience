@@ -264,7 +264,7 @@
   height: 100cqi;
   max-width: none;
   max-height: none;
-  object-fit: cover;
+  object-fit: contain;
   transform: translate(-50%, -50%) rotate(var(--camera-rotation));
 }
 
