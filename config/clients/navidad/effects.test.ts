@@ -17,7 +17,7 @@ const HALLUCINATION_TRIGGER_WORDS =
   /\b(glasses|eyeglasses|sunglasses|spectacles|goggles|monocle|earrings|piercings|freckles|makeup|puppet)\b/i;
 
 describe('clay effect catalog', () => {
-  it('uses Decart Lucy 2.6 two-sentence Swap + Restyle structure without face-accessory triggers', () => {
+  it('replaces the real background via Set the background + Swap outfit without face-accessory triggers', () => {
     expect(DEFAULT_CLAY_EFFECT_ID).toBe('duende');
 
     const ids = new Set<string>();
@@ -28,17 +28,21 @@ describe('clay effect catalog', () => {
       expect(effect.name.trim().length).toBeGreaterThan(0);
 
       const words = effect.prompt.trim().split(/\s+/).length;
-      expect(words).toBeGreaterThanOrEqual(40);
-      expect(words).toBeLessThanOrEqual(75);
+      expect(words).toBeGreaterThanOrEqual(45);
+      expect(words).toBeLessThanOrEqual(95);
       expect(effect.prompt.length).toBeLessThanOrEqual(750);
 
-      expect(effect.prompt.startsWith("Swap the person's outfit for ")).toBe(true);
+      expect(effect.prompt.startsWith('Set the background to ')).toBe(true);
+      expect(effect.prompt).toContain("swap the person's outfit for ");
       expect(effect.prompt).toContain(
-        'restyle the scene as stop-motion plasticine claymation.',
+        'and render the person in stop-motion plasticine claymation.',
       );
+      expect(effect.prompt).toContain('filling the entire background,');
       expect(effect.prompt).toContain(
-        'The output will show the same person with their natural face in smooth clay,',
+        'with the same person in the foreground with their natural face in smooth clay, wearing ',
       );
+      // Avoid `restyle the scene` which keeps real-world walls/room structure
+      expect(effect.prompt).not.toMatch(/restyle the (entire )?scene/i);
 
       expect(effect.prompt).not.toMatch(BREAKS_CLAY_STYLE);
       expect(effect.prompt).not.toMatch(HALLUCINATION_TRIGGER_WORDS);

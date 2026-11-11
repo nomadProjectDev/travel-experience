@@ -1,10 +1,17 @@
 /**
  * Live Lucy 2.6 looks (`enhance: false`).
  *
- * Follows Decart's official Lucy 2.6 two-sentence structure (40-65 words):
- *   1. Explicit commands: `Swap the person's outfit for <costume>, set the
- *      background to <scene>, and restyle the entire scene as ...`
- *   2. `The output will show ...` describing ONLY desired visible elements.
+ * Follows Decart's official Lucy 2.6 two-sentence structure (45-70 words):
+ *   1. Explicit commands: `Set the background to <complete claymation world>,
+ *      swap the person's outfit for <costume>, and style the person in
+ *      stop-motion plasticine claymation.`
+ *   2. `The output will show <full scene filling the background>, with the same
+ *      person in the foreground...`
+ *
+ * Why `Set the background` comes FIRST (and we avoid `restyle the scene`):
+ * `restyle the scene` repaints the user's real room geometry, whereas `Set the
+ * background` with concrete landmarks/walls/sky completely replaces the real-life
+ * room behind the user.
  *
  * IMPORTANT: Never put negative lists ("do not add glasses/beard/earrings") or
  * the word "puppet" in diffusion prompts — mentioning `glasses` or `beard`
@@ -27,27 +34,34 @@ export interface ClayEffect {
   stud: string;
   /** Label ink on that lump. */
   ink: 'dark' | 'light';
-  /** English two-sentence Lucy 2.6 prompt (40-65 words). */
+  /** English two-sentence Lucy 2.6 prompt replacing background + outfit. */
   prompt: string;
 }
 
 export const DEFAULT_CLAY_EFFECT_ID = 'duende';
 
 interface ClayOutfitSpec {
+  background: string;
   outfit: string;
   resultWearing: string;
-  scene: string;
+  resultBackdrop: string;
   /** Optional extra command clause (e.g. Santa's white clay beard). */
   extraCommand?: string;
 }
 
-function clayLook({ outfit, resultWearing, scene, extraCommand }: ClayOutfitSpec): string {
+function clayLook({
+  background,
+  outfit,
+  resultWearing,
+  resultBackdrop,
+  extraCommand,
+}: ClayOutfitSpec): string {
   const extra = extraCommand ? `, ${extraCommand}` : '';
   return (
-    `Swap the person's outfit for ${outfit}${extra}, set the background to ${scene}, ` +
-    `and restyle the scene as stop-motion plasticine claymation. ` +
-    `The output will show the same person with their natural face in smooth clay, ` +
-    `wearing ${resultWearing} in ${scene}.`
+    `Set the background to ${background}, swap the person's outfit for ${outfit}${extra}, ` +
+    `and render the person in stop-motion plasticine claymation. ` +
+    `The output will show ${resultBackdrop} filling the entire background, ` +
+    `with the same person in the foreground with their natural face in smooth clay, wearing ${resultWearing}.`
   );
 }
 
@@ -60,9 +74,11 @@ export const CLAY_EFFECTS: readonly ClayEffect[] = [
     stud: '#1B6B45',
     ink: 'light',
     prompt: clayLook({
+      background:
+        'a stop-motion claymation Christmas toy workshop with wooden shelves of colorful toys, wrapped gifts, and a snowy window',
       outfit: 'a green felt elf tunic, red striped scarf, and pointed green hat',
+      resultBackdrop: 'clay wooden shelves packed with toys, gifts, and warm string lights',
       resultWearing: 'the green clay elf tunic, scarf, and pointed hat',
-      scene: 'a warm clay toy workshop',
     }),
   },
   {
@@ -73,10 +89,12 @@ export const CLAY_EFFECTS: readonly ClayEffect[] = [
     stud: '#C23A32',
     ink: 'light',
     prompt: clayLook({
+      background:
+        'a cozy claymation North Pole log cabin with a glowing stone fireplace, decorated Christmas tree, and stockings',
       outfit: 'a red velvet Santa coat and hat',
       extraCommand: 'add a fluffy white plasticine Santa beard',
+      resultBackdrop: 'a warm clay log cabin with a lit stone fireplace and Christmas tree',
       resultWearing: 'the red clay Santa coat, hat, and white clay beard',
-      scene: 'a snowy clay North Pole cabin',
     }),
   },
   {
@@ -87,9 +105,11 @@ export const CLAY_EFFECTS: readonly ClayEffect[] = [
     stud: '#E2B33A',
     ink: 'dark',
     prompt: clayLook({
+      background:
+        'a claymation desert palace courtyard at night with golden arches, glowing lanterns, and a bright Guiding Star in the sky',
       outfit: 'embroidered royal robes, a velvet cape, and a gold crown',
+      resultBackdrop: 'clay palace arches, hanging lanterns, and a starry night sky',
       resultWearing: 'rich clay royal robes, cape, and gold crown',
-      scene: 'a starry clay palace courtyard',
     }),
   },
   {
@@ -100,9 +120,11 @@ export const CLAY_EFFECTS: readonly ClayEffect[] = [
     stud: '#7A4A28',
     ink: 'light',
     prompt: clayLook({
+      background:
+        'a claymation snowy pine forest at night with snow-laden evergreen trees, falling snow, and a red wooden sleigh',
       outfit: 'a brown winter parka with sleigh bells and a reindeer antler headband',
+      resultBackdrop: 'snow-covered clay pine trees, falling snow, and a red sleigh',
       resultWearing: 'the brown clay coat with sleigh bells and small clay antlers',
-      scene: 'a snowy clay pine forest',
     }),
   },
   {
@@ -113,9 +135,11 @@ export const CLAY_EFFECTS: readonly ClayEffect[] = [
     stud: '#F7F3EA',
     ink: 'dark',
     prompt: clayLook({
+      background:
+        'a claymation snowy Christmas village square at night with crooked cottages, glowing amber windows, and street lamps',
       outfit: 'a puffy white winter coat with coal buttons, red scarf, and black top hat',
+      resultBackdrop: 'snowy clay cottages with glowing windows and warm street lamps',
       resultWearing: 'the white clay coat, red scarf, and black top hat',
-      scene: 'a snowy clay village square',
     }),
   },
   {
@@ -126,9 +150,11 @@ export const CLAY_EFFECTS: readonly ClayEffect[] = [
     stud: '#6B1D2A',
     ink: 'light',
     prompt: clayLook({
+      background:
+        'a grand claymation Christmas theater stage with red velvet curtains, golden spotlights, and a giant decorated tree',
       outfit: 'a crimson toy soldier jacket with gold epaulets and a tall black hat',
+      resultBackdrop: 'red clay velvet stage curtains, golden lights, and a Christmas tree',
       resultWearing: 'the crimson clay soldier jacket and tall black hat',
-      scene: 'a festive clay theater stage',
     }),
   },
   {
@@ -139,9 +165,11 @@ export const CLAY_EFFECTS: readonly ClayEffect[] = [
     stud: '#F6E6C4',
     ink: 'dark',
     prompt: clayLook({
+      background:
+        'a dreamy claymation night sky above a tiny glowing Bethlehem village with fluffy cotton clouds and golden stars',
       outfit: 'a cream holiday tunic with white feathered wings and a gold halo',
+      resultBackdrop: 'fluffy cotton clouds and golden clay stars in a deep blue sky',
       resultWearing: 'the cream clay tunic, white clay wings, and gold halo',
-      scene: 'a starry sky with cotton clouds',
     }),
   },
   {
@@ -152,9 +180,11 @@ export const CLAY_EFFECTS: readonly ClayEffect[] = [
     stud: '#C47A3A',
     ink: 'dark',
     prompt: clayLook({
+      background:
+        'a claymation Christmas bakery kitchen with candy-cane pillars, gingerbread houses, frosting jars, and a warm brick oven',
       outfit: 'a cinnamon gingerbread sweater with white icing trim and gumdrop buttons',
+      resultBackdrop: 'a clay bakery filled with gingerbread houses, candy canes, and a glowing oven',
       resultWearing: 'the cinnamon clay sweater with white icing and gumdrop buttons',
-      scene: 'a warm clay Christmas bakery',
     }),
   },
   {
@@ -165,9 +195,11 @@ export const CLAY_EFFECTS: readonly ClayEffect[] = [
     stud: '#1E3A5F',
     ink: 'light',
     prompt: clayLook({
+      background:
+        'a claymation Arctic mountain ridge at night with snowdrifts, icy peaks, and glowing green northern lights across the sky',
       outfit: 'a navy quilted Arctic coat with fur hood trim and a knit beanie',
+      resultBackdrop: 'snowy clay Arctic peaks beneath bright green northern lights',
       resultWearing: 'the navy clay Arctic coat and knit beanie',
-      scene: 'a snowy hill under green northern lights',
     }),
   },
 ];
