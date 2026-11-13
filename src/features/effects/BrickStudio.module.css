@@ -383,8 +383,8 @@
 }
 
 /* Desktop landscape: preserve the portrait MUPI's touch-first proportions while
-   giving the landing copy a tighter editorial measure and an intrinsic CTA. */
-@media (min-width: 64rem) and (min-aspect-ratio: 4 / 3) {
+   giving the landing copy a tighter editorial measure and a bounded CTA. */
+@media (min-width: 64rem) and (orientation: landscape) {
   .landing {
     --landing-desktop-inset: clamp(3rem, 7vw, 7rem);
     gap: clamp(1.35rem, 2.5vh, 2rem);
@@ -423,8 +423,9 @@
   }
 
   .cta {
-    width: fit-content;
-    min-width: 16rem;
+    align-self: flex-start;
+    width: clamp(16rem, 20vw, 20rem);
+    min-width: 0;
     max-width: 100%;
     padding-inline: 2.5rem;
   }
