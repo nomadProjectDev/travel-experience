@@ -23,9 +23,9 @@ const manifest: PlatformManifest = {
     faceFitRecommendations: false,
   },
   brand: {
-    productName: 'ELIGE TU NAVIDAD',
+    productName: 'Navidad en vivo',
     logoSrc: '',
-    logoAlt: 'Elige tu Navidad, personajes navideños en vivo',
+    logoAlt: 'Navidad en vivo',
   },
   wardrobe,
   copy,

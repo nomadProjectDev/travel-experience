@@ -33,7 +33,7 @@ export interface ClayEffect {
   };
 }
 
-export const DEFAULT_CLAY_EFFECT_ID = 'duende';
+export const DEFAULT_CLAY_EFFECT_ID = 'noel';
 
 interface ChristmasCharacterSpec {
   background: string;
@@ -57,20 +57,6 @@ function christmasCharacter({
 
 export const CLAY_EFFECTS: readonly ClayEffect[] = [
   {
-    id: 'duende',
-    group: 'restyle',
-    name: 'Duende de plastilina',
-    kicker: 'Plastilina',
-    stud: '#1B6B45',
-    ink: 'light',
-    style: 'handmade plasticine claymation',
-    prompt: christmasCharacter({
-      background: 'a plasticine Christmas workshop with gifts, lights and snow',
-      character: 'one green-and-red handmade elf puppet',
-      medium: 'hand-sculpted plasticine claymation',
-    }),
-  },
-  {
     id: 'noel',
     group: 'restyle',
     name: 'Papá Noel',
@@ -83,6 +69,20 @@ export const CLAY_EFFECTS: readonly ClayEffect[] = [
       character: 'a friendly red-suited Christmas gift-bringer puppet',
       medium: 'soft wool felt stop-motion',
       faceDirection: 'no eyewear; one rounded white wool-felt beard',
+    }),
+  },
+  {
+    id: 'duende',
+    group: 'restyle',
+    name: 'Duende de plastilina',
+    kicker: 'Plastilina',
+    stud: '#1B6B45',
+    ink: 'light',
+    style: 'handmade plasticine claymation',
+    prompt: christmasCharacter({
+      background: 'a plasticine Christmas workshop with gifts, lights and snow',
+      character: 'one green-and-red handmade elf puppet',
+      medium: 'hand-sculpted plasticine claymation',
     }),
   },
   {

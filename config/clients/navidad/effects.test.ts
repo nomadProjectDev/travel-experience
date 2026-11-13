@@ -16,9 +16,14 @@ const CUTE_CHARACTER_WORDS =
   /\b(cute|lovable|friendly|cheerful|joyful|cuddly|sweet|warm)\b/i;
 
 describe('festive effect catalog', () => {
-  it('has unique IDs, usable labels, and no unwanted eyewear types', () => {
-    expect(DEFAULT_CLAY_EFFECT_ID).toBe('duende');
+  it('uses handcrafted Papá Noel as the first and default effect', () => {
+    expect(DEFAULT_CLAY_EFFECT_ID).toBe('noel');
+    expect(CLAY_EFFECTS[0]).toBe(getClayEffect(DEFAULT_CLAY_EFFECT_ID));
+    expect(CLAY_EFFECTS[0]?.name).toBe('Papá Noel');
+    expect(CLAY_EFFECTS[0]?.referenceImage).toBeUndefined();
+  });
 
+  it('has unique IDs, usable labels, and no unwanted eyewear types', () => {
     const ids = new Set<string>();
     for (const effect of CLAY_EFFECTS) {
       expect(ids.has(effect.id)).toBe(false);
@@ -149,8 +154,8 @@ describe('festive effect catalog', () => {
     expect(CLAY_EFFECTS).toHaveLength(10);
     expect(CLAY_EFFECTS.some((effect) => effect.id === 'mama')).toBe(false);
     expect(CLAY_EFFECTS.map((effect) => effect.id)).toEqual([
-      'duende',
       'noel',
+      'duende',
       'santa-realista',
       'santa-lego',
       'reno',
@@ -161,8 +166,8 @@ describe('festive effect catalog', () => {
       'galleta',
     ]);
     expect(CLAY_EFFECTS.map((effect) => effect.name)).toEqual([
-      'Duende de plastilina',
       'Papá Noel',
+      'Duende de plastilina',
       'Papá Noel realista',
       'Papá Noel de bloques',
       'Reno de peluche',

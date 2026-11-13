@@ -151,7 +151,7 @@ describe('client pack isolation', () => {
     expect(manifest.copy.landing.subtitle).toBe(
       'Conviértete en un personaje navideño adorable.',
     );
-    expect(manifest.brand.productName).toBe('ELIGE TU NAVIDAD');
+    expect(manifest.brand.productName).toBe('Navidad en vivo');
     expect(JSON.stringify(manifest.copy)).not.toMatch(/barro|arcilla|plastilina/i);
     expect(JSON.stringify(manifest.copy)).not.toMatch(/lucy|decart/i);
     expect(manifest.copy.landing.ctaLabel).toBe('Empezar');

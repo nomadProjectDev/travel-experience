@@ -2,7 +2,7 @@ import type { PlatformCopy } from '../../types';
 
 const copy: PlatformCopy = {
   landing: {
-    eyebrow: 'Personajes navideños en vivo',
+    eyebrow: 'Tu personaje. En directo.',
     titleLine1: 'Elige tu',
     titleLine2: 'Navidad',
     subtitle: 'Conviértete en un personaje navideño adorable.',

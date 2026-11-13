@@ -4,7 +4,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getCopy } from '@config';
+import { getCopy, getManifest } from '@config';
 import {
   CAMERA_ROTATION_ANGLES,
   nextCameraRotationDeg,
@@ -18,6 +18,7 @@ import styles from './BrickStudio.module.css';
 
 function BrickStudio() {
   const copy = getCopy();
+  const manifest = getManifest();
   const studio = copy.brickStudio;
   const session = useBrickSession();
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -182,30 +183,33 @@ function BrickStudio() {
           decoding="async"
         />
         <div className={styles.scrim} aria-hidden />
-        <header className={styles.hero}>
-          <p className={styles.eyebrow}>{copy.landing.eyebrow}</p>
-          <h1 className={styles.title}>
-            {copy.landing.titleLine1}
-            <br />
-            <span className={styles.titleAccent}>{copy.landing.titleLine2}</span>
-          </h1>
-          <p className={styles.subtitle}>{copy.landing.subtitle}</p>
-        </header>
-        <div className={styles.plate}>
-          <button
-            type="button"
-            className={styles.cta}
-            onClick={handleStartLive}
-            disabled={session.isOpeningCamera}
-            aria-busy={session.isOpeningCamera}
-          >
-            {session.isOpeningCamera ? copy.landing.ctaBusyLabel : copy.landing.ctaLabel}
-          </button>
-          {session.error ? (
-            <p className={styles.error} role="alert">{session.error}</p>
-          ) : (
-            <p className={styles.privacy}>{copy.landing.privacyNote}</p>
-          )}
+        <p className={styles.brandLabel}>{manifest.brand.productName}</p>
+        <div className={styles.landingContent}>
+          <header className={styles.hero}>
+            <p className={styles.eyebrow}>{copy.landing.eyebrow}</p>
+            <h1 className={styles.title}>
+              {copy.landing.titleLine1}
+              <br />
+              <span className={styles.titleAccent}>{copy.landing.titleLine2}</span>
+            </h1>
+            <p className={styles.subtitle}>{copy.landing.subtitle}</p>
+          </header>
+          <div className={styles.plate}>
+            <button
+              type="button"
+              className={styles.cta}
+              onClick={handleStartLive}
+              disabled={session.isOpeningCamera}
+              aria-busy={session.isOpeningCamera}
+            >
+              {session.isOpeningCamera ? copy.landing.ctaBusyLabel : copy.landing.ctaLabel}
+            </button>
+            {session.error ? (
+              <p className={styles.error} role="alert">{session.error}</p>
+            ) : (
+              <p className={styles.privacy}>{copy.landing.privacyNote}</p>
+            )}
+          </div>
         </div>
       </div>
     );

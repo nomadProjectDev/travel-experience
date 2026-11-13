@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   CLAY_EFFECTS,
+  DEFAULT_CLAY_EFFECT_ID,
   getClayEffect,
 } from '@config/clients/navidad/effects';
 import {
@@ -23,6 +24,17 @@ function createClient() {
 }
 
 describe('Decart clay effect payloads', () => {
+  it('starts Decart with the handcrafted Papá Noel prompt and no image conditioning', () => {
+    const initialEffect = getClayEffect(DEFAULT_CLAY_EFFECT_ID);
+
+    expect(initialEffect.id).toBe('noel');
+    expect(buildClayEffectSetInput(initialEffect)).toEqual({
+      prompt: initialEffect.prompt,
+      enhance: false,
+      image: null,
+    });
+  });
+
   it('keeps every final outgoing prompt within the realtime budget', () => {
     for (const effect of CLAY_EFFECTS) {
       const payload = buildClayEffectSetInput(effect);

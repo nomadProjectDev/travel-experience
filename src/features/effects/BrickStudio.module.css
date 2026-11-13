@@ -14,8 +14,8 @@
 .landing {
   flex-direction: column;
   justify-content: flex-end;
-  gap: 1.15rem;
   background: #0c1214;
+  isolation: isolate;
 }
 
 .techHotspot {
@@ -115,12 +115,39 @@
   pointer-events: none;
 }
 
-.hero {
+.brandLabel {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: max(1.25rem, env(safe-area-inset-top));
+  inset-inline-end: max(1.25rem, env(safe-area-inset-right));
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgb(255 246 232 / 0.16);
+  border-radius: 0.45rem;
+  background: rgb(7 17 14 / 0.54);
+  color: rgb(255 246 232 / 0.9);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(0.35rem);
+  -webkit-backdrop-filter: blur(0.35rem);
+}
+
+.landingContent {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  gap: 1.15rem;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
   gap: 0.55rem;
   padding:
     max(1.4rem, env(safe-area-inset-top))
@@ -170,8 +197,6 @@
 }
 
 .plate {
-  position: relative;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
@@ -202,11 +227,32 @@
   box-shadow:
     0 6px 0 #7a241e,
     inset 0 7px 0 rgb(255 255 255 / 0.28);
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 }
 
 .cta:disabled {
   cursor: wait;
   opacity: 0.8;
+}
+
+@media (hover: hover) {
+  .cta:hover:not(:disabled) {
+    background: #d1453b;
+    transform: translateY(-2px);
+    box-shadow:
+      0 8px 0 #7a241e,
+      inset 0 7px 0 rgb(255 255 255 / 0.28);
+  }
+}
+
+.cta:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 3px 0 #7a241e,
+    inset 0 5px 0 rgb(255 255 255 / 0.24);
 }
 
 .cta:focus-visible {
@@ -382,58 +428,149 @@
   backdrop-filter: blur(1rem) saturate(110%);
 }
 
-/* Desktop landscape: preserve the portrait MUPI's touch-first proportions while
-   giving the landing copy a tighter editorial measure and a bounded CTA. */
-@media (min-width: 64rem) and (orientation: landscape) {
+/* Desktop and square displays: keep the portrait MUPI defaults untouched while
+   using the wider scene as an editorial canvas. */
+@media (min-width: 48rem) and (min-aspect-ratio: 4 / 5) {
   .landing {
-    --landing-desktop-inset: clamp(3rem, 7vw, 7rem);
-    gap: clamp(1.35rem, 2.5vh, 2rem);
+    --landing-desktop-inset-x: clamp(3.5rem, 7.5vw, 10rem);
+    --landing-desktop-inset-bottom: clamp(3rem, 7vh, 6rem);
+  }
+
+  .set {
+    object-position: center 34%;
+  }
+
+  .scrim {
+    background:
+      radial-gradient(
+        ellipse 42rem 34rem at 12% 94%,
+        rgb(4 8 8 / 0.82) 0%,
+        rgb(4 8 8 / 0.58) 38%,
+        rgb(4 8 8 / 0.22) 66%,
+        transparent 82%
+      ),
+      linear-gradient(
+        to bottom,
+        rgb(6 10 14 / 0.06) 0%,
+        transparent 50%,
+        rgb(6 8 12 / 0.18) 75%,
+        rgb(6 8 12 / 0.42) 100%
+      );
+  }
+
+  .brandLabel {
+    inset-block-start: max(clamp(1.75rem, 3vw, 3rem), env(safe-area-inset-top));
+    inset-inline-end: max(clamp(1.75rem, 3vw, 3rem), env(safe-area-inset-right));
+    padding: 0.55rem 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .landingContent {
+    width: min(
+      36rem,
+      calc(100% - var(--landing-desktop-inset-x) - var(--landing-desktop-inset-x))
+    );
+    margin-block-end: max(
+      var(--landing-desktop-inset-bottom),
+      env(safe-area-inset-bottom)
+    );
+    margin-inline-start: max(
+      var(--landing-desktop-inset-x),
+      env(safe-area-inset-left)
+    );
+    gap: clamp(1.4rem, 2.5vh, 2rem);
   }
 
   .hero {
-    gap: clamp(0.65rem, 1.2vh, 0.9rem);
-    width: min(100%, 38rem);
-    padding-inline:
-      max(var(--landing-desktop-inset), env(safe-area-inset-left))
-      0;
+    gap: clamp(0.7rem, 1.25vh, 1rem);
+    width: 100%;
+    padding: 0;
+  }
+
+  .eyebrow {
+    font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+    line-height: 1.4;
+    letter-spacing: 0.18em;
   }
 
   .title {
-    max-width: 10ch;
-    font-size: clamp(4rem, 6.25vw, 5.75rem);
-    line-height: 0.9;
-    text-wrap: balance;
+    max-width: none;
+    font-size: clamp(4.5rem, 7vw, 7rem);
+    line-height: 0.86;
   }
 
   .subtitle {
-    max-width: 30ch;
-    font-size: clamp(1.125rem, 1.4vw, 1.375rem);
-    line-height: 1.4;
+    max-width: 32ch;
+    margin-block-start: 0.25rem;
+    font-size: clamp(1.15rem, 1.4vw, 1.4rem);
+    line-height: 1.42;
     text-wrap: pretty;
   }
 
   .plate {
     align-items: flex-start;
-    width: fit-content;
-    max-width: min(100%, 32rem);
-    margin-bottom: max(clamp(2rem, 5vh, 4rem), env(safe-area-inset-bottom));
-    padding-inline:
-      max(var(--landing-desktop-inset), env(safe-area-inset-left))
-      0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    gap: 0.85rem;
   }
 
   .cta {
     align-self: flex-start;
-    width: clamp(16rem, 20vw, 20rem);
+    width: clamp(17rem, 19vw, 20rem);
     min-width: 0;
     max-width: 100%;
+    min-height: 3.75rem;
     padding-inline: 2.5rem;
   }
 
   .privacy,
   .error {
-    max-width: 38ch;
+    max-width: 40ch;
+    font-size: clamp(0.95rem, 1vw, 1.05rem);
+    line-height: 1.45;
     text-wrap: pretty;
+  }
+}
+
+@media (min-width: 90rem) and (min-aspect-ratio: 4 / 5) {
+  .landingContent {
+    width: min(
+      38rem,
+      calc(100% - var(--landing-desktop-inset-x) - var(--landing-desktop-inset-x))
+    );
+  }
+}
+
+@media (min-width: 48rem) and (orientation: landscape) {
+  .landing {
+    justify-content: center;
+    box-sizing: border-box;
+    padding-block:
+      max(clamp(2rem, 4vh, 4rem), env(safe-area-inset-top))
+      max(clamp(2rem, 4vh, 4rem), env(safe-area-inset-bottom));
+  }
+
+  .scrim {
+    background:
+      radial-gradient(
+        ellipse 42rem 34rem at 12% 54%,
+        rgb(4 8 8 / 0.82) 0%,
+        rgb(4 8 8 / 0.58) 38%,
+        rgb(4 8 8 / 0.22) 66%,
+        transparent 82%
+      ),
+      linear-gradient(
+        to bottom,
+        rgb(6 10 14 / 0.06) 0%,
+        transparent 50%,
+        rgb(6 8 12 / 0.18) 75%,
+        rgb(6 8 12 / 0.42) 100%
+      );
+  }
+
+  .landingContent {
+    margin-block-end: 0;
   }
 }
 
@@ -441,5 +578,10 @@
   .cta,
   .exit {
     transition: none;
+  }
+
+  .cta:hover:not(:disabled),
+  .cta:active:not(:disabled) {
+    transform: none;
   }
 }
