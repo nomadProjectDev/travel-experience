@@ -63,7 +63,8 @@
 }
 
 :global(html[data-display='mupi']) .clay {
-  min-block-size: 2.35rem;
+  min-block-size: 3rem;
+  padding-block: 0.45rem 0.4rem;
 }
 
 .clay:disabled {

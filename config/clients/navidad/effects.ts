@@ -1,7 +1,7 @@
 /**
  * Live Lucy 2.6 looks (`enhance: false`).
  *
- * Follows Decart's official Lucy 2.6 two-sentence structure (45-70 words):
+ * Clay looks follow Decart's official Lucy 2.6 two-sentence structure (45-70 words):
  *   1. Explicit commands: `Set the background to <complete claymation world>,
  *      swap the person's outfit for <costume>, and style the person in
  *      stop-motion plasticine claymation.`
@@ -13,10 +13,10 @@
  * background` with concrete landmarks/walls/sky completely replaces the real-life
  * room behind the user.
  *
- * IMPORTANT: Never put negative lists ("do not add glasses/beard/earrings") or
+ * IMPORTANT: Never put negative accessory lists in diffusion prompts or
  * the word "puppet" in diffusion prompts — mentioning `glasses` or `beard`
  * activates those tokens and hallucinates them onto clean faces. `Swap` keeps
- * the person's real visual identity; only `noel` explicitly adds a Santa beard.
+ * the person's real visual identity. Santa looks may explicitly add a Santa beard.
  */
 
 export const CLAY_EFFECT_GROUPS = ['restyle'] as const;
@@ -34,7 +34,7 @@ export interface ClayEffect {
   stud: string;
   /** Label ink on that lump. */
   ink: 'dark' | 'light';
-  /** English two-sentence Lucy 2.6 prompt replacing background + outfit. */
+  /** English Lucy 2.6 prompt replacing background + outfit. */
   prompt: string;
 }
 
@@ -96,6 +96,26 @@ export const CLAY_EFFECTS: readonly ClayEffect[] = [
       resultBackdrop: 'a warm clay log cabin with a lit stone fireplace and Christmas tree',
       resultWearing: 'the red clay Santa coat, hat, and white clay beard',
     }),
+  },
+  {
+    id: 'santa-realista',
+    group: 'restyle',
+    name: 'Santa realista',
+    kicker: 'Clásico',
+    stud: '#9E2823',
+    ink: 'light',
+    prompt:
+      'Convert me in Santa Claus. Set the background to a realistic cozy North Pole cabin with a glowing fireplace and decorated Christmas tree. Render the whole person as a realistic human Santa, preserving the same recognizable identity and natural facial features, in a classic red suit and hat with a white Santa beard.',
+  },
+  {
+    id: 'santa-lego',
+    group: 'restyle',
+    name: 'Santa LEGO',
+    kicker: 'Minifigura',
+    stud: '#D7352A',
+    ink: 'light',
+    prompt:
+      'Convert me in a classic LEGO Santa Claus figure. Set the background to a complete LEGO North Pole workshop with a brick-built Christmas tree and wrapped presents. Transform the whole person from head to toe into one classic LEGO minifigure Santa, preserving recognizable identity cues in the minifigure face, with the traditional red suit, hat, and white Santa beard.',
   },
   {
     id: 'reyes',
