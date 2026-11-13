@@ -382,6 +382,60 @@
   backdrop-filter: blur(1rem) saturate(110%);
 }
 
+/* Desktop landscape: preserve the portrait MUPI's touch-first proportions while
+   giving the landing copy a tighter editorial measure and an intrinsic CTA. */
+@media (min-width: 64rem) and (min-aspect-ratio: 4 / 3) {
+  .landing {
+    --landing-desktop-inset: clamp(3rem, 7vw, 7rem);
+    gap: clamp(1.35rem, 2.5vh, 2rem);
+  }
+
+  .hero {
+    gap: clamp(0.65rem, 1.2vh, 0.9rem);
+    width: min(100%, 38rem);
+    padding-inline:
+      max(var(--landing-desktop-inset), env(safe-area-inset-left))
+      0;
+  }
+
+  .title {
+    max-width: 10ch;
+    font-size: clamp(4rem, 6.25vw, 5.75rem);
+    line-height: 0.9;
+    text-wrap: balance;
+  }
+
+  .subtitle {
+    max-width: 30ch;
+    font-size: clamp(1.125rem, 1.4vw, 1.375rem);
+    line-height: 1.4;
+    text-wrap: pretty;
+  }
+
+  .plate {
+    align-items: flex-start;
+    width: fit-content;
+    max-width: min(100%, 32rem);
+    margin-bottom: max(clamp(2rem, 5vh, 4rem), env(safe-area-inset-bottom));
+    padding-inline:
+      max(var(--landing-desktop-inset), env(safe-area-inset-left))
+      0;
+  }
+
+  .cta {
+    width: fit-content;
+    min-width: 16rem;
+    max-width: 100%;
+    padding-inline: 2.5rem;
+  }
+
+  .privacy,
+  .error {
+    max-width: 38ch;
+    text-wrap: pretty;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cta,
   .exit {
