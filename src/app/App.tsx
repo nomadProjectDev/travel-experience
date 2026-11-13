@@ -20,10 +20,8 @@ import appStyles from './App.module.css';
 
 const manifest = getManifest();
 
-const App: React.FC = () => {
-  if (manifest.copy.brickStudio) return <BrickStudio />;
-  return <ClothingStudio />;
-};
+const App: React.FC = () =>
+  manifest.copy.brickStudio ? <BrickStudio /> : <ClothingStudio />;
 
 const ClothingStudio: React.FC = () => {
   const session = useTryOnSession();

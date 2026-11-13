@@ -23,9 +23,9 @@ const manifest: PlatformManifest = {
     faceFitRecommendations: false,
   },
   brand: {
-    productName: 'TALLER DE BARRO',
+    productName: 'ELIGE TU NAVIDAD',
     logoSrc: '',
-    logoAlt: 'Taller de Barro, efectos en vivo',
+    logoAlt: 'Elige tu Navidad, personajes navideños en vivo',
   },
   wardrobe,
   copy,

@@ -227,16 +227,17 @@
 }
 
 .studio {
-  flex-direction: row;
+  flex-direction: column;
   background: #111;
 }
 
 .stage {
   position: relative;
-  flex: 1 1 70%;
-  max-width: 70%;
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
-  height: 100%;
+  min-height: 0;
   container-type: size;
   background: #000;
   overflow: clip;
@@ -360,25 +361,25 @@
 }
 
 .railPane {
-  flex: 0 0 30%;
-  width: 30%;
-  max-width: 30%;
-  height: 100%;
+  flex: 0 0 clamp(14rem, 30%, 34rem);
+  width: 100%;
+  max-width: 100%;
   min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   min-width: 0;
-  overflow-x: hidden;
+  overflow: hidden;
   padding:
-    max(0.65rem, env(safe-area-inset-top))
-    0.45rem
-    max(0.65rem, env(safe-area-inset-bottom));
-  background-color: #14382c;
-  background-image:
-    radial-gradient(circle at 18% 22%, rgb(255 255 255 / 0.55) 0 4px, transparent 5px),
-    radial-gradient(circle at 72% 68%, rgb(255 255 255 / 0.32) 0 3px, transparent 4px);
-  background-size: 68px 84px, 92px 108px;
+    0.65rem
+    max(0.75rem, env(safe-area-inset-right, 0px))
+    max(0.65rem, env(safe-area-inset-bottom, 0px))
+    max(0.75rem, env(safe-area-inset-left, 0px));
+  border-top: 1px solid rgb(255 246 232 / 0.14);
+  background:
+    linear-gradient(180deg, rgb(31 49 41 / 0.96), rgb(18 31 26 / 0.99));
   color: #fff6e8;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.04),
+    0 -1rem 2.5rem rgb(4 10 8 / 0.24);
+  backdrop-filter: blur(1rem) saturate(110%);
 }
 
 @media (prefers-reduced-motion: reduce) {

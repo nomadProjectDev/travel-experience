@@ -133,7 +133,7 @@ describe('client pack isolation', () => {
     }
   });
 
-  it('navidad pack is a portrait claymation kiosk', () => {
+  it('navidad pack is a portrait multi-style festive kiosk', () => {
     const manifest = resolveManifestForClient('navidad');
     expect(manifest.theme).toBe('navidad');
     expect(manifest.display).toEqual({
@@ -145,8 +145,14 @@ describe('client pack isolation', () => {
     expect(manifest.features.backgroundAudio).toBe(false);
     expect(manifest.wardrobe).toEqual([]);
     expect(manifest.copy.brickStudio?.restylesTitle).toBe('Personajes');
-    expect(manifest.copy.brickStudio?.railHint).toMatch(/plastilina/);
-    expect(manifest.copy.landing.titleLine2).toMatch(/plastilina/i);
+    expect(`${manifest.copy.landing.titleLine1} ${manifest.copy.landing.titleLine2}`).toBe(
+      'Elige tu Navidad',
+    );
+    expect(manifest.copy.landing.subtitle).toBe(
+      'Conviértete en un personaje navideño adorable.',
+    );
+    expect(manifest.brand.productName).toBe('ELIGE TU NAVIDAD');
+    expect(JSON.stringify(manifest.copy)).not.toMatch(/barro|arcilla|plastilina/i);
     expect(JSON.stringify(manifest.copy)).not.toMatch(/lucy|decart/i);
     expect(manifest.copy.landing.ctaLabel).toBe('Empezar');
     expect(CLAY_EFFECTS.length).toBeGreaterThanOrEqual(8);

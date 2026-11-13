@@ -37,20 +37,3 @@ html[data-display='mupi'] .app-footer__inner {
   padding-block-end:
     max(var(--vf-landing-inset-bottom), env(safe-area-inset-bottom, 0px));
 }
-
-@media (orientation: landscape) {
-  html[data-display='mupi']::before {
-    content: 'Gira la pantalla a formato vertical';
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: grid;
-    place-items: center;
-    padding: 2rem;
-    background: rgb(var(--vf-bg-0));
-    color: rgb(var(--text-strong));
-    font-size: clamp(1.275rem, 3.4vw, 2.55rem);
-    font-weight: 750;
-    text-align: center;
-  }
-}

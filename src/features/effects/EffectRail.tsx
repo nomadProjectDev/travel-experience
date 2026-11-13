@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { PlatformCopy } from '@config/types';
 import {
   CLAY_EFFECT_GROUPS,
@@ -37,10 +38,10 @@ function EffectRail({
 }: EffectRailProps) {
   return (
     <div className={styles.rail}>
-      <p className={styles.hint}>{copy.railHint}</p>
       {CLAY_EFFECT_GROUPS.map((group) => (
         <section key={group} className={styles.group} aria-label={groupTitle(group, copy)}>
           <h2 className={styles.groupTitle}>{groupTitle(group, copy)}</h2>
+          <p className={styles.hint}>{copy.railHint}</p>
           <div className={styles.grid}>
             {effectsInGroup(group).map((effect) => {
               const selected = effect.id === activeEffectId;
@@ -50,17 +51,24 @@ function EffectRail({
                   type="button"
                   className={cn(styles.clay, selected && styles.claySelected)}
                   style={{
-                    backgroundColor: effect.stud,
-                    color: effect.ink === 'light' ? '#fff6e8' : '#3c2418',
-                  }}
+                    '--effect-color': effect.stud,
+                    '--effect-ink': effect.ink === 'light' ? '#fff6e8' : '#3c2418',
+                  } as CSSProperties}
                   aria-pressed={selected}
                   aria-label={copy.applyEffect.replace('{name}', effect.name)}
                   disabled={disabled}
                   onClick={() => onSelect(effect)}
                 >
-                  <span className={styles.shine} aria-hidden />
-                  <span className={styles.kicker}>{effect.kicker}</span>
-                  <span className={styles.name}>{effect.name}</span>
+                  <span className={styles.preview} aria-hidden>
+                    <span className={styles.previewGlyph}>
+                      {effect.name.charAt(0)}
+                    </span>
+                    <span className={styles.previewAccent} />
+                  </span>
+                  <span className={styles.label}>
+                    <span className={styles.name}>{effect.name}</span>
+                    <span className={styles.kicker}>{effect.kicker}</span>
+                  </span>
                 </button>
               );
             })}

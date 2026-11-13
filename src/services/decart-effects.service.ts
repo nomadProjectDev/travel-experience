@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * Lucy 2.6 realtime creative effects (`lucy-2.6`).
- * Sent with `enhance: false` so Lucy does not rewrite the claymation lock.
+ * Sent with `enhance: false` so each catalog prompt keeps its own visual style.
  *
  * Same connection lessons as the clothing VTON session:
  * - Permanent keys stay server-side. `apiKeyProvider` mints a client token
@@ -22,6 +22,7 @@ import {
   resolveFpsNumber,
   type ConnectionState,
   type RealTimeClient,
+  type SetInput,
 } from '@decartai/sdk';
 import type { ClayEffect } from '@config/clients/navidad/effects';
 import { requestCameraStream, stopCameraStream } from '@/shared/lib/camera';
@@ -30,6 +31,9 @@ const effectsModel = models.realtime('lucy-2.6');
 
 const REMOTE_AFTER_PROMPT_MS = 8_000;
 const CAMERA_READY_TIMEOUT_MS = 5_000;
+
+export const DECART_EFFECTS_MAX_PROMPT_CHARS = 400;
+export const DECART_EFFECTS_MAX_PROMPT_WORDS = 55;
 
 export const DECART_EFFECTS_STREAM_FORMAT = {
   width: effectsModel.width,
@@ -94,6 +98,12 @@ const decartClient = createDecartClient({
 let activeRealtimeClient: RealTimeClient | null = null;
 let activeLocalStream: MediaStream | null = null;
 let sessionEpoch = 0;
+
+export interface ClayEffectSetClient {
+  set(input: SetInput): Promise<void>;
+}
+
+export type ClayEffectImageLoader = (src: string) => Promise<Blob>;
 
 export interface ConnectDecartEffectsOptions {
   localStream: MediaStream;
@@ -199,7 +209,7 @@ async function openSession(
   }
 
   activeRealtimeClient = rtClient;
-  await rtClient.setPrompt(options.effect.prompt, { enhance: false });
+  await applyClayEffect(rtClient, options.effect);
   await waitForRemote(() => remoteReceived, REMOTE_AFTER_PROMPT_MS);
 
   return {
@@ -229,7 +239,61 @@ export async function setClayEffectPrompt(effect: ClayEffect): Promise<void> {
     throw new Error('No active Decart effects session');
   }
   devLog('setPrompt', { effectId: effect.id, promptChars: effect.prompt.length });
-  await activeRealtimeClient.setPrompt(effect.prompt, { enhance: false });
+  await applyClayEffect(activeRealtimeClient, effect);
+}
+
+export function buildClayEffectSetInput(
+  effect: ClayEffect,
+  image: Blob | null = null,
+): SetInput {
+  const prompt = effect.prompt.trim();
+  const wordCount = prompt ? prompt.split(/\s+/).length : 0;
+  if (
+    prompt.length > DECART_EFFECTS_MAX_PROMPT_CHARS ||
+    wordCount > DECART_EFFECTS_MAX_PROMPT_WORDS
+  ) {
+    throw new Error(
+      `Decart effect "${effect.id}" prompt exceeds the realtime budget ` +
+        `(${prompt.length}/${DECART_EFFECTS_MAX_PROMPT_CHARS} chars, ` +
+        `${wordCount}/${DECART_EFFECTS_MAX_PROMPT_WORDS} words)`,
+    );
+  }
+  return {
+    prompt,
+    enhance: false,
+    image,
+  };
+}
+
+export async function fetchClayEffectImage(src: string): Promise<Blob> {
+  const response = await fetch(src, { cache: 'force-cache' });
+  if (!response.ok) {
+    throw new Error(`Reference image request failed with HTTP ${response.status}`);
+  }
+  const image = await response.blob();
+  if (image.size === 0) {
+    throw new Error('Reference image response was empty');
+  }
+  return image;
+}
+
+export async function applyClayEffect(
+  client: ClayEffectSetClient,
+  effect: ClayEffect,
+  loadImage: ClayEffectImageLoader = fetchClayEffectImage,
+): Promise<void> {
+  let image: Blob | null = null;
+  if (effect.referenceImage) {
+    try {
+      image = await loadImage(effect.referenceImage.src);
+    } catch (error) {
+      devLog('reference image unavailable; using prompt only', {
+        effectId: effect.id,
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+  await client.set(buildClayEffectSetInput(effect, image));
 }
 
 export function disconnectDecartEffectsSession(options?: {

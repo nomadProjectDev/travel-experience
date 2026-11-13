@@ -2,7 +2,7 @@
 
 Portrait MUPI of live creative effects in a Christmas claymation world. Cloned from
 the brick-effects kiosk. The camera feeds Decart Lucy 2.6; a rail of characters
-(elf, Santa, the Three Kings, and the rest of the North Pole) swaps the look
+(elf, Papá Noel, the Three Kings, and the rest of the North Pole) swaps the look
 without reconnecting.
 
 ## Quick start
@@ -22,7 +22,7 @@ Plain `npm run dev` lands on the **navidad** pack.
 
 1. **Landing** — "Navidad en plastilina".
 2. **Live** — camera plus Lucy 2.6, starting as a claymation Christmas elf.
-3. **Rail** — clay costumes: elf, Santa, King, reindeer, snowman, nutcracker, angel, gingerbread, Arctic explorer. The person stays recognizable.
+3. **Rail** — clay costumes: elf, Papá Noel, King, reindeer, snowman, nutcracker, angel, gingerbread, Arctic explorer. The person stays recognizable.
 
 ## Environment
 

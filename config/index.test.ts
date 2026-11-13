@@ -35,9 +35,12 @@ describe('manifest resolution', () => {
     expect(isFeatureEnabled('wardrobeFeed')).toBe(false);
   });
 
-  it('opens on the claymation landing', () => {
+  it('opens on the multi-style festive landing', () => {
     const manifest = getManifest();
-    expect(manifest.copy.landing.titleLine2).toMatch(/plastilina/i);
+    expect(`${manifest.copy.landing.titleLine1} ${manifest.copy.landing.titleLine2}`).toBe(
+      'Elige tu Navidad',
+    );
+    expect(manifest.copy.landing.subtitle).toMatch(/personaje navideño adorable/i);
     expect(manifest.copy.brickStudio?.liveBadge).toBe('En vivo');
   });
 });
