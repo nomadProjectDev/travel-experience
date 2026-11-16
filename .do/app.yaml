@@ -1,12 +1,14 @@
-# DigitalOcean App Platform — Taller de Barro (navidad live claymation effects MUPI)
-# Fill SECRET values in the dashboard. VITE_KIOSK_API_KEY (BUILD) MUST equal API_KEY (RUN).
-name: navidad-mupi
+# DigitalOcean App Platform — FITUR / Travel Experience MUPI
+# Spec for the existing app lego-mupi (29fb3e4c-941f-4a12-b71b-bf7867b40d7f).
+# Keep that app name so the ingress URL stays. Fill SECRET values in the dashboard.
+# VITE_KIOSK_API_KEY (BUILD) MUST equal API_KEY (RUN).
+name: lego-mupi
 region: ams
 services:
   - name: web
     source_dir: /
     github:
-      repo: nomadProjectDev/navidad
+      repo: nomadProjectDev/fitur
       branch: main
       deploy_on_push: true
     environment_slug: node-js
@@ -31,7 +33,7 @@ services:
         scope: BUILD_TIME
       # Do not set NODE_ENV at BUILD_TIME — App Platform would skip vite (devDependency).
       - key: VITE_CLIENT_ID
-        value: navidad
+        value: travel-experience
         scope: BUILD_TIME
       - key: VITE_CAMERA_ROTATION_DEG
         value: "0"

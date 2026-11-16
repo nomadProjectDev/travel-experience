@@ -119,7 +119,7 @@ export interface PlatformBrand {
   logoSrc: string;
   logoAlt: string;
   poweredBy?: string;
-  /** Full-bleed landing image under `public/`. */
+  /** Landing image under `public/`. */
   landingSrc?: string;
   /**
    * The landing image is a finished campaign plate.
@@ -127,6 +127,8 @@ export interface PlatformBrand {
    * is not titled twice.
    */
   landingPlate?: boolean;
+  /** Accessible name when the plate already contains its title. */
+  landingAlt?: string;
 }
 
 /**
@@ -423,6 +425,12 @@ export interface PlatformCopy {
     /** Use `{name}` for the effect label. */
     applyEffect: string;
     sessionError: string;
+    /** Country-home heading. Travel pack only. */
+    destinationsTitle?: string;
+    /** Live control that leaves the camera and returns to the look picker. */
+    changeLook?: string;
+    /** Variant screen back control (travel MUPI). */
+    variantBackLabel?: string;
   };
   /** Portrait kiosk studio copy. */
   mupiStudio?: {

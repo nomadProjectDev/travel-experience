@@ -18,81 +18,6 @@
   isolation: isolate;
 }
 
-.techHotspot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 80;
-  width: 24vw;
-  height: 10vh;
-  min-width: 7.5rem;
-  min-height: 4.5rem;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.rotationPillAnchor {
-  position: fixed;
-  top: max(1rem, env(safe-area-inset-top));
-  left: 0;
-  right: 0;
-  z-index: 81;
-  display: flex;
-  justify-content: center;
-  padding-inline: 0.75rem;
-  pointer-events: none;
-}
-
-.rotationPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  max-width: 100%;
-  padding: 0.4rem 0.55rem;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 999px;
-  background: rgba(12, 16, 20, 0.92);
-  color: #fff;
-  pointer-events: auto;
-}
-
-.rotationAngles {
-  display: inline-flex;
-  gap: 0.25rem;
-}
-
-.rotationAngle {
-  min-width: 2.75rem;
-  min-height: 2.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 999px;
-  background: transparent;
-  color: #fff;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.rotationAngle[data-active='true'] {
-  background: #fff;
-  color: #111;
-}
-
-.rotationClose {
-  width: 2.75rem;
-  height: 2.75rem;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  font-size: 1.4rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
 .set {
   position: absolute;
   inset: 0;
@@ -317,6 +242,32 @@
   object-fit: cover;
   object-position: center;
   background: #000;
+}
+
+/*
+ * 90°/270°: outbound pixels are rotated upright BEFORE Decart inference so
+ * cloth/body gravity stays vertical. The 9:16 person sits in the centered
+ * 405×720 column of Decart's 1280×720 stream. Scale that column to cover
+ * portrait MUPI screens edge-to-edge (and fit full height on landscape tests)
+ * without rotating the <video> element in CSS.
+ */
+.video.videoQuarter {
+  --portrait-col-width: max(100cqw, calc(100cqh * 9 / 16));
+  inset: auto;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--portrait-col-width) * var(--remote-frame-scale));
+  height: auto;
+  max-width: none;
+  aspect-ratio: 16 / 9;
+  object-fit: fill;
+  transform: translate(-50%, -50%);
+}
+
+@container (orientation: landscape) {
+  .video.videoQuarter {
+    --portrait-col-width: calc(100cqh * 9 / 16);
+  }
 }
 
 .videoMirrored {
@@ -594,9 +545,463 @@
   }
 }
 
+.lookBadge {
+  max-width: min(70%, 18rem);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.home {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: #10281f;
+  color: #fffaf4;
+}
+
+.homeBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.homeScrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgb(8 18 14 / 0.28), rgb(8 18 14 / 0.08) 28%, rgb(8 18 14 / 0.42));
+  pointer-events: none;
+}
+
+.homeFrame,
+.variantFrame {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: min(100%, 42rem);
+  height: 100%;
+  min-height: 0;
+  margin-inline: auto;
+  overflow: auto;
+  padding:
+    max(1rem, env(safe-area-inset-top))
+    max(0.9rem, env(safe-area-inset-right))
+    max(0.9rem, env(safe-area-inset-bottom))
+    max(0.9rem, env(safe-area-inset-left));
+}
+
+.variantFrame {
+  gap: clamp(0.65rem, 1.8vh, 1rem);
+  width: min(100%, 44rem);
+}
+
+.homeTitle,
+.variantTitle {
+  margin: 0;
+  color: #fffaf4;
+  font-family: var(--vf-font-display, Georgia, 'Iowan Old Style', serif);
+  font-weight: 600;
+  line-height: 1.05;
+  text-align: center;
+  text-shadow: 0 2px 16px rgb(0 0 0 / 0.5);
+  text-wrap: balance;
+}
+
+.homeTitle {
+  font-size: clamp(1.7rem, 4.2vh, 2.5rem);
+}
+
+.countryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  align-content: center;
+  flex: 1;
+  min-height: 0;
+}
+
+.countryCard {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 1.15rem;
+  overflow: hidden;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 12px 28px rgb(0 0 0 / 0.32);
+}
+
+.countryCard img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.countryCard:focus-visible,
+.choice:focus-visible,
+.back:focus-visible {
+  outline: 3px solid #d6a454;
+  outline-offset: 3px;
+}
+
+.variantScrim {
+  background:
+    linear-gradient(to bottom, rgb(8 16 12 / 0.36) 0%, rgb(8 16 12 / 0.12) 32%, rgb(8 16 12 / 0.28) 100%);
+}
+
+.variantBrandHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  text-align: center;
+}
+
+.variantBrandEyebrow {
+  margin: 0;
+  color: rgb(255 250 244 / 0.92);
+  font-family: var(--vf-font-display, Georgia, serif);
+  font-size: clamp(0.72rem, 1.6vh, 0.85rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 14px rgb(0 0 0 / 0.5);
+}
+
+.variantBrandArc {
+  width: 2.25rem;
+  height: 0.55rem;
+  margin-block: 0.05rem 0.1rem;
+  border-top: 1px solid rgb(214 164 84 / 0.9);
+  border-radius: 100% 100% 0 0 / 100% 100% 0 0;
+}
+
+.variantBrandTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  line-height: 1;
+}
+
+.variantBrandTitleLine,
+.variantBrandTitleAccent {
+  font-family: var(--vf-font-display, Georgia, serif);
+  font-size: clamp(2.1rem, 5.8vh, 3.25rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow: 0 4px 22px rgb(0 0 0 / 0.45);
+}
+
+.variantBrandTitleLine {
+  color: rgb(244 239 228 / 0.96);
+}
+
+.variantBrandTitleAccent {
+  color: #e8c56d;
+}
+
+.variantBrandRule {
+  position: relative;
+  width: min(100%, 16rem);
+  height: 1px;
+  margin-block: 0.35rem 0.15rem;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgb(214 164 84 / 0.85) 18%,
+    rgb(214 164 84 / 0.85) 82%,
+    transparent
+  );
+}
+
+.variantBrandRule::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.4rem;
+  height: 0.4rem;
+  border: 1px solid rgb(214 164 84 / 0.9);
+  background: rgb(28 22 18 / 0.65);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.variantDestinationLine {
+  margin: 0;
+  color: #e8c56d;
+  font-family: var(--vf-font-display, Georgia, serif);
+  font-size: clamp(1rem, 2.4vh, 1.35rem);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 16px rgb(0 0 0 / 0.5);
+}
+
+.variantFlagBand {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  width: min(100%, 7.5rem);
+  height: 0.28rem;
+  margin-block: 0.15rem 0.25rem;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 0.35);
+}
+
+.variantFlagBand {
+  background: linear-gradient(
+    to right,
+    var(--variant-flag-1, #fcd116) 0%,
+    var(--variant-flag-1, #fcd116) 33.3%,
+    var(--variant-flag-2, #003893) 33.3%,
+    var(--variant-flag-2, #003893) 66.6%,
+    var(--variant-flag-3, #ce1126) 66.6%,
+    var(--variant-flag-3, #ce1126) 100%
+  );
+}
+
+.variantLead {
+  margin: 0;
+  color: rgb(255 250 244 / 0.96);
+  font-family: var(--vf-font-display, Georgia, serif);
+  font-size: clamp(1.35rem, 3.6vh, 1.85rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 16px rgb(0 0 0 / 0.5);
+}
+
+.choiceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.65rem, 2vw, 1rem);
+  flex: 1 1 auto;
+  align-self: stretch;
+  align-items: stretch;
+  width: 100%;
+  min-height: 0;
+  margin-block: 0.35rem auto;
+}
+
+.choice {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  min-height: min(56vh, 28rem);
+  padding: 0;
+  border: 1.5px solid rgb(232 197 109 / 0.92);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  background: rgb(20 16 12 / 0.35);
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow:
+    0 0 0 1px rgb(232 197 109 / 0.28),
+    0 0 28px rgb(214 164 84 / 0.32),
+    0 18px 36px rgb(0 0 0 / 0.38);
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease,
+    border-color 180ms ease;
+}
+
+.choice:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+@media (hover: hover) {
+  .choice:hover:not(:disabled) {
+    border-color: rgb(244 224 160 / 0.98);
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px rgb(244 224 160 / 0.4),
+      0 0 36px rgb(214 164 84 / 0.45),
+      0 22px 40px rgb(0 0 0 / 0.42);
+  }
+}
+
+.choiceFigure {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+}
+
+.choiceFigure img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+  object-position: center 14%;
+}
+
+.variantBack {
+  border: 1.5px solid rgb(214 164 84 / 0.92);
+  background: rgb(12 20 16 / 0.55);
+  color: #e8c56d;
+  font-size: clamp(0.95rem, 2.2vh, 1.05rem);
+  backdrop-filter: blur(0.4rem);
+  -webkit-backdrop-filter: blur(0.4rem);
+  box-shadow:
+    0 0 18px rgb(214 164 84 / 0.18),
+    0 10px 24px rgb(0 0 0 / 0.32);
+}
+
+@media (hover: hover) {
+  .variantBack:hover {
+    background: rgb(16 28 22 / 0.68);
+    color: #f4e4b8;
+  }
+}
+
+.pickerStatus,
+.pickerError {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 0.45);
+}
+
+.pickerError {
+  color: #ffd0c8;
+}
+
+.back {
+  align-self: center;
+  min-height: 3.5rem;
+  margin-top: auto;
+  padding: 0.55rem 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f4efe4;
+  color: #1c1612;
+  font-family: var(--vf-font-display, Georgia, 'Iowan Old Style', serif);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.28);
+}
+
+@media (min-width: 48rem) and (min-aspect-ratio: 4 / 5) {
+  .homeFrame,
+  .variantFrame {
+    width: min(40rem, calc(100% - 4rem));
+    padding-block: max(1.5rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-bottom));
+  }
+
+  .choice {
+    min-height: min(52vh, 30rem);
+  }
+}
+
+/* Latinoamérica landing plate: full-bleed poster, CTA overlaid at the foot. */
+:global([data-theme='travel-experience']) .landing {
+  justify-content: flex-end;
+  gap: 0;
+  background: #0c1214;
+  padding: 0;
+}
+
+:global([data-theme='travel-experience']) .landing::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 0;
+  height: min(42%, 24rem);
+  background: linear-gradient(to top, rgb(8 6 4 / 0.52), transparent);
+  pointer-events: none;
+}
+
+:global([data-theme='travel-experience']) .set {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  object-position: center;
+}
+
+:global([data-theme='travel-experience']) .landingContent {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: min(100%, 26rem);
+  margin: 0;
+  margin-inline: auto;
+  margin-block-end: max(1.1rem, env(safe-area-inset-bottom));
+  gap: 0.65rem;
+}
+
+:global([data-theme='travel-experience']) .plate {
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+:global([data-theme='travel-experience']) .cta {
+  align-self: center;
+  width: min(100%, 22rem);
+}
+
+:global([data-theme='travel-experience']) .privacy {
+  max-width: 36ch;
+  color: rgb(255 250 244 / 0.92);
+  text-align: center;
+  text-shadow: 0 1px 10px rgb(0 0 0 / 0.55);
+}
+
+@media (min-width: 48rem) and (min-aspect-ratio: 4 / 5) {
+  :global([data-theme='travel-experience']) .landingContent {
+    width: min(26rem, calc(100% - 3rem));
+    margin-inline: auto;
+    margin-block-end: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}
+
+@media (min-width: 48rem) and (orientation: landscape) {
+  :global([data-theme='travel-experience']) .landing {
+    justify-content: flex-end;
+    padding: 0;
+  }
+
+  :global([data-theme='travel-experience']) .landingContent {
+    margin-block-end: max(1.1rem, env(safe-area-inset-bottom));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cta,
-  .exit {
+  .exit,
+  .countryCard,
+  .choice,
+  .back {
     transition: none;
   }
 

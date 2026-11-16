@@ -102,10 +102,9 @@ export function isQuarterTurnRotation(raw: unknown): boolean {
  * side padding. Do not use object-fit:cover on the raw 16:9 frame — that
  * zoomed into the face. 0°/180° stay contain and keep the landscape bars.
  */
-export function decartRemoteFrameScale(
-  frameWidth = 1280,
-  frameHeight = 720,
-): number {
+export function decartRemoteFrameScale(): number {
+  const frameWidth = 1280;
+  const frameHeight = 720;
   const contentWidth = (frameHeight * frameHeight) / frameWidth;
   return frameWidth / contentWidth;
 }
@@ -149,13 +148,25 @@ export function computeCameraContainPlan(
   };
 }
 
+type FrameCanvas2DContext = Pick<
+  CanvasRenderingContext2D,
+  | 'setTransform'
+  | 'fillStyle'
+  | 'fillRect'
+  | 'translate'
+  | 'scale'
+  | 'rotate'
+  | 'drawImage'
+>;
+
 export function drawContainedCameraFrame(
-  context: CanvasRenderingContext2D,
-  canvas: HTMLCanvasElement,
+  context: FrameCanvas2DContext,
+  canvas: { width: number; height: number },
   source: CanvasImageSource,
   sourceWidth: number,
   sourceHeight: number,
   rotationDeg: unknown,
+  mirrorHorizontal = false,
 ): CameraContainPlan | null {
   const plan = computeCameraContainPlan(
     sourceWidth,
@@ -170,6 +181,9 @@ export function drawContainedCameraFrame(
   context.fillStyle = '#000';
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.translate(canvas.width / 2, canvas.height / 2);
+  if (mirrorHorizontal) {
+    context.scale(-1, 1);
+  }
   context.rotate(plan.radians);
   context.drawImage(
     source,

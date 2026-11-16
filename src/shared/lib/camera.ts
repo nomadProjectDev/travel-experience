@@ -188,15 +188,30 @@ function waitForVideoMetadata(video: HTMLVideoElement): Promise<void> {
 export async function createOrientedCameraStream(
   sourceStream: MediaStream,
   rotationDeg: CameraRotationDeg,
-  options: { width: number; height: number; frameRate: number },
+  options: {
+    width: number;
+    height: number;
+    frameRate: number;
+    mirrorHorizontal?: boolean;
+  },
 ): Promise<MediaStream> {
-  if (rotationDeg === 0) return sourceStream;
+  const mirrorHorizontal = options.mirrorHorizontal ?? rotationDeg !== 0;
+  if (rotationDeg === 0 && !mirrorHorizontal) {
+    return sourceStream;
+  }
+
+  if (typeof document === 'undefined') {
+    if (rotationDeg === 0) return sourceStream;
+    stopCameraStream(sourceStream);
+    throw new Error('This environment cannot rotate the camera stream for live try-on');
+  }
 
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d', { alpha: false });
   if (!context || typeof canvas.captureStream !== 'function') {
+    if (rotationDeg === 0) return sourceStream;
     stopCameraStream(sourceStream);
-    throw new Error('This browser cannot rotate the camera stream for live effects');
+    throw new Error('This browser cannot rotate the camera stream for live try-on');
   }
 
   canvas.width = options.width;
@@ -205,14 +220,34 @@ export async function createOrientedCameraStream(
   const video = document.createElement('video');
   video.muted = true;
   video.playsInline = true;
+  video.setAttribute('aria-hidden', 'true');
+  video.style.cssText =
+    'position:fixed;width:1px;height:1px;left:-2px;top:-2px;opacity:0.001;pointer-events:none;';
+  document.body?.appendChild(video);
   video.srcObject = sourceStream;
-  await video.play();
-  await waitForVideoMetadata(video);
+  try {
+    await video.play();
+    await waitForVideoMetadata(video);
+  } catch (err) {
+    video.remove();
+    throw err;
+  }
+
+  // Create captureStream BEFORE the first draw and pump on a wall-clock interval
+  // so unfocused/throttled rAF never starves WebRTC of frames.
+  const outputStream = canvas.captureStream(options.frameRate);
+  let activeTrack = outputStream.getVideoTracks()[0];
+  if (!activeTrack) {
+    video.pause();
+    video.srcObject = null;
+    video.remove();
+    stopCameraStream(sourceStream);
+    throw new Error('Camera orientation pipeline produced no video track');
+  }
 
   let activeRotation: CameraRotationDeg = rotationDeg;
-  let animationFrame = 0;
   let disposed = false;
-  const draw = () => {
+  const drawOnce = () => {
     if (disposed) return;
     drawContainedCameraFrame(
       context,
@@ -221,25 +256,27 @@ export async function createOrientedCameraStream(
       video.videoWidth,
       video.videoHeight,
       activeRotation,
+      mirrorHorizontal,
     );
-    animationFrame = window.requestAnimationFrame(draw);
+    const capTrack = activeTrack as MediaStreamTrack & {
+      requestFrame?: () => void;
+    };
+    capTrack.requestFrame?.();
   };
-  draw();
+  drawOnce();
+  const intervalMs = Math.max(
+    16,
+    Math.round(1000 / Math.max(1, options.frameRate)),
+  );
+  const pumpTimer = window.setInterval(drawOnce, intervalMs);
 
-  const outputStream = canvas.captureStream(options.frameRate);
-  let activeTrack = outputStream.getVideoTracks()[0];
-  if (!activeTrack) {
-    video.pause();
-    video.srcObject = null;
-    stopCameraStream(sourceStream);
-    throw new Error('Camera orientation pipeline produced no video track');
-  }
   const dispose = () => {
     if (disposed) return;
     disposed = true;
-    window.cancelAnimationFrame(animationFrame);
+    window.clearInterval(pumpTimer);
     video.pause();
     video.srcObject = null;
+    video.remove();
     stopTracksOnce(outputStream);
     if (!stoppedCameraStreams.has(sourceStream)) {
       stoppedCameraStreams.add(sourceStream);
@@ -308,5 +345,60 @@ export function captureVideoFrame(
     rotationDeg,
   );
 
+  return canvas.toDataURL('image/jpeg', quality);
+}
+
+/**
+ * Captures a snapshot from an already-oriented Decart live video element.
+ * At 90°/270°, the upright 9:16 portrait sits in the centered column of the
+ * 16:9 remote stream; crop out the side pillarboxes so saved looks are 9:16.
+ */
+export function captureOrientedLiveSnapshot(
+  video: HTMLVideoElement,
+  rotationDeg: CameraRotationDeg = 0,
+  quality = 0.92,
+): string | null {
+  const { videoWidth, videoHeight } = video;
+  if (!videoWidth || !videoHeight) return null;
+  if (!isQuarterTurnRotation(rotationDeg)) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    canvas.width = videoWidth;
+    canvas.height = videoHeight;
+    drawContainedCameraFrame(
+      ctx,
+      canvas,
+      video,
+      videoWidth,
+      videoHeight,
+      0,
+      rotationDeg === 0,
+    );
+    return canvas.toDataURL('image/jpeg', quality);
+  }
+
+  const contentWidth = Math.max(
+    1,
+    Math.round((videoHeight * videoHeight) / videoWidth),
+  );
+  const sx = Math.max(0, Math.round((videoWidth - contentWidth) / 2));
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  canvas.width = contentWidth;
+  canvas.height = videoHeight;
+  ctx.drawImage(
+    video,
+    sx,
+    0,
+    contentWidth,
+    videoHeight,
+    0,
+    0,
+    contentWidth,
+    videoHeight,
+  );
   return canvas.toDataURL('image/jpeg', quality);
 }

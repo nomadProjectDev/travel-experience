@@ -2,18 +2,22 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
- * Lucy 2.6 realtime creative effects (`lucy-2.6`).
- * Sent with `enhance: false` so each catalog prompt keeps its own visual style.
+ * Decart Lucy VTON (`lucy-vton-3.6`) realtime virtual try-on session for
+ * NO.MAD LAB Travel Experience (`enhance: false`).
  *
- * Same connection lessons as the clothing VTON session:
- * - Permanent keys stay server-side. `apiKeyProvider` mints a client token
- *   immediately before every dial.
- * - Do not pass `initialState`. Join-time generation starts before the
- *   camera track is published and the session dies at 0s.
- * - `mirror: "auto"` wraps `facingMode: "user"` tracks and can publish a
- *   live track with zero frames. Keep `mirror: false` and mirror the
- *   local preview in CSS.
- * - `setPrompt` ACK is not a remote track. Wait for `onRemoteStream`.
+ * Proven `@decartai/sdk` 0.2.14 connection lifecycle:
+ * - Permanent keys stay server-side; `apiKeyProvider` mints a short-lived
+ *   client token right before every dial.
+ * - Wait for non-zero local camera track dimensions before dialling LiveKit.
+ * - Connect bare (`mirror: false`, NO `initialState`): in `@decartai/sdk`,
+ *   `signaling.openAndJoin({ initialState })` runs before `media.publishLocalTracks()`,
+ *   which starts join-time VTON generation before camera frames exist and
+ *   terminates `lucy-vton-3.6` with `generationEnded { reason: "error", seconds: 0 }`.
+ * - Immediately after `realtime.connect()` resolves, call
+ *   `await rtClient.set({ prompt, image: garmentFile, enhance: false })` using
+ *   the clean ghost-mannequin garment plate normalized via `urlToDecartGarmentFile`.
+ * - Gate `onRemoteStream` until `rtClient.set(...)` has completed so the UI
+ *   remains in its connecting state and never flashes raw untransformed camera video.
  */
 
 import {
@@ -22,14 +26,19 @@ import {
   resolveFpsNumber,
   type ConnectionState,
   type RealTimeClient,
+  type RealTimeClientConnectOptions,
   type SetInput,
 } from '@decartai/sdk';
 import type { ClayEffect } from '@config/clients/travel-experience/effects';
+import type { CameraRotationDeg } from '@/core/media/cameraRotation';
+import { urlToDecartGarmentFile } from '@/core/media/garmentFile';
 import { requestCameraStream, stopCameraStream } from '@/shared/lib/camera';
 
-const effectsModel = models.realtime('lucy-2.6');
+export const DECART_LIVE_MODEL_NAME = 'lucy-vton-3.6' as const;
 
-const REMOTE_AFTER_PROMPT_MS = 8_000;
+const effectsModel = models.realtime(DECART_LIVE_MODEL_NAME);
+
+const REMOTE_AFTER_SET_MS = 8_000;
 const CAMERA_READY_TIMEOUT_MS = 5_000;
 
 export const DECART_EFFECTS_MAX_PROMPT_CHARS = 400;
@@ -48,13 +57,36 @@ export const DECART_EFFECTS_VIDEO_CONSTRAINTS: MediaTrackConstraints = {
   height: { ideal: DECART_EFFECTS_STREAM_FORMAT.height },
 };
 
+/**
+ * Portrait phones & mobile browsers at 0° rotation must NOT be forced to
+ * landscape 1280×720: requesting `{ facingMode: "user" }` on portrait viewports
+ * lets iOS Safari / Android Chrome deliver a native portrait camera track so
+ * Lucy VTON infers 9:16 (`720×1280`) automatically. Sideways-mounted MUPI
+ * cameras (`cameraRotationDeg !== 0`) keep explicit 1280×720 constraints.
+ */
+export function resolveEffectsVideoConstraints(
+  cameraRotationDeg: CameraRotationDeg = 0,
+): MediaTrackConstraints {
+  if (
+    cameraRotationDeg === 0 &&
+    typeof window !== 'undefined' &&
+    window.innerHeight > window.innerWidth
+  ) {
+    return {
+      facingMode: 'user',
+      frameRate: effectsModel.fps,
+    };
+  }
+  return DECART_EFFECTS_VIDEO_CONSTRAINTS;
+}
+
 function devLog(message: string, detail?: Record<string, unknown>): void {
   if (!import.meta.env.DEV) return;
   if (detail) {
-    console.info(`[decart-effects] ${message}`, detail);
+    console.info(`[decart-vton-travel] ${message}`, detail);
     return;
   }
-  console.info(`[decart-effects] ${message}`);
+  console.info(`[decart-vton-travel] ${message}`);
 }
 
 function apiAuthHeaders(): Record<string, string> {
@@ -95,9 +127,32 @@ const decartClient = createDecartClient({
   apiKeyProvider: fetchRealtimeToken,
 });
 
+const garmentFileCache = new Map<string, Promise<File>>();
+
 let activeRealtimeClient: RealTimeClient | null = null;
 let activeLocalStream: MediaStream | null = null;
+let activePublishedCloneStream: MediaStream | null = null;
 let sessionEpoch = 0;
+
+function stopClonedStream(stream: MediaStream | null): void {
+  if (!stream) return;
+  for (const track of stream.getTracks()) {
+    try {
+      track.stop();
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+function cloneStreamForPublish(stream: MediaStream): MediaStream {
+  if (typeof MediaStream === 'undefined') return stream;
+  const tracks = stream.getTracks();
+  if (tracks.some((track) => typeof track.clone !== 'function')) {
+    return stream;
+  }
+  return new MediaStream(tracks.map((track) => track.clone()));
+}
 
 export interface ClayEffectSetClient {
   set(input: SetInput): Promise<void>;
@@ -105,21 +160,63 @@ export interface ClayEffectSetClient {
 
 export type ClayEffectImageLoader = (src: string) => Promise<Blob>;
 
+export type RealtimeConnectFn = (
+  stream: MediaStream,
+  options: RealTimeClientConnectOptions<MediaStream>,
+) => Promise<RealTimeClient>;
+
 export interface ConnectDecartEffectsOptions {
   localStream: MediaStream;
   effect: ClayEffect;
   onRemoteStream: (stream: MediaStream) => void;
   onConnectionChange?: (state: ConnectionState) => void;
   onError?: (err: Error) => void;
+  loadImage?: ClayEffectImageLoader;
+  realtimeConnect?: RealtimeConnectFn;
+  remoteAfterSetTimeoutMs?: number;
 }
 
-export async function requestEffectsCameraStream(): Promise<MediaStream> {
-  return requestCameraStream(DECART_EFFECTS_VIDEO_CONSTRAINTS);
+export async function requestEffectsCameraStream(
+  cameraRotationDeg: CameraRotationDeg = 0,
+): Promise<MediaStream> {
+  return requestCameraStream(resolveEffectsVideoConstraints(cameraRotationDeg));
+}
+
+function filenameFromPath(src: string): string {
+  const clean = src.split('?')[0]?.split('#')[0] ?? '';
+  const tail = clean.split('/').filter(Boolean).pop();
+  return tail || 'garment.webp';
+}
+
+export function loadCachedGarmentFile(garmentImagePath: string): Promise<File> {
+  const cached = garmentFileCache.get(garmentImagePath);
+  if (cached) return cached;
+
+  const pending = urlToDecartGarmentFile(
+    garmentImagePath,
+    filenameFromPath(garmentImagePath),
+  ).catch((err) => {
+    garmentFileCache.delete(garmentImagePath);
+    throw err;
+  });
+
+  garmentFileCache.set(garmentImagePath, pending);
+  return pending;
+}
+
+export function clearGarmentFileCache(): void {
+  garmentFileCache.clear();
+}
+
+function assertNonEmptyBlob(blob: Blob, src: string): void {
+  if (!(blob instanceof Blob) || blob.size <= 0) {
+    throw new Error(`Invalid garment reference image for "${src}"`);
+  }
 }
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => {
-    window.setTimeout(resolve, ms);
+    globalThis.setTimeout(resolve, ms);
   });
 }
 
@@ -129,7 +226,7 @@ async function waitForCameraTrackReady(
 ): Promise<void> {
   const track = stream.getVideoTracks()[0];
   if (!track) {
-    throw new Error('Decart effects require a local video track');
+    throw new Error('Decart VTON requires a local video track');
   }
   if (track.readyState === 'ended') {
     throw new Error('Camera track ended before Decart connect');
@@ -151,95 +248,15 @@ async function waitForCameraTrackReady(
 }
 
 async function waitForRemote(
-  remoteReceived: () => boolean,
+  remoteDelivered: () => boolean,
   timeoutMs: number,
 ): Promise<boolean> {
-  if (remoteReceived()) return true;
+  if (remoteDelivered()) return true;
   const deadline = Date.now() + timeoutMs;
-  while (!remoteReceived() && Date.now() < deadline) {
-    await sleep(250);
+  while (!remoteDelivered() && Date.now() < deadline) {
+    await sleep(50);
   }
-  return remoteReceived();
-}
-
-async function openSession(
-  options: ConnectDecartEffectsOptions,
-  epoch: number,
-): Promise<{ client: RealTimeClient; remoteReceived: () => boolean }> {
-  const useFastMode = import.meta.env.VITE_DECART_SPEED?.trim() === 'fast';
-  let remoteReceived = false;
-  let suppressErrors = false;
-
-  devLog('connect', {
-    effectId: options.effect.id,
-    speed: useFastMode ? 'fast' : 'standard',
-  });
-
-  const rtClient = await decartClient.realtime.connect(options.localStream, {
-    model: effectsModel,
-    mirror: false,
-    ...(useFastMode ? { speed: 'fast' as const } : {}),
-    onRemoteStream: (remoteStream) => {
-      remoteReceived = true;
-      if (epoch !== sessionEpoch) return;
-      options.onRemoteStream(remoteStream);
-    },
-    onConnectionChange: (state) => {
-      if (epoch === sessionEpoch) options.onConnectionChange?.(state);
-    },
-  });
-
-  rtClient.on('error', (sdkError) => {
-    if (suppressErrors || epoch !== sessionEpoch) return;
-    const err =
-      sdkError instanceof Error
-        ? sdkError
-        : new Error(String((sdkError as { message?: string })?.message || 'Decart realtime error'));
-    options.onError?.(err);
-  });
-
-  if (epoch !== sessionEpoch) {
-    suppressErrors = true;
-    try {
-      rtClient.disconnect();
-    } catch {
-      /* replaced */
-    }
-    return { client: rtClient, remoteReceived: () => false };
-  }
-
-  activeRealtimeClient = rtClient;
-  await applyClayEffect(rtClient, options.effect);
-  await waitForRemote(() => remoteReceived, REMOTE_AFTER_PROMPT_MS);
-
-  return {
-    client: rtClient,
-    remoteReceived: () => remoteReceived,
-  };
-}
-
-export async function connectDecartEffectsSession(
-  options: ConnectDecartEffectsOptions,
-): Promise<RealTimeClient> {
-  const epoch = ++sessionEpoch;
-  disconnectDecartEffectsSession({ keepLocalStream: options.localStream, nextEpoch: epoch });
-  activeLocalStream = options.localStream;
-
-  await waitForCameraTrackReady(options.localStream);
-  if (epoch !== sessionEpoch) {
-    throw new Error('Decart effects connect cancelled');
-  }
-
-  const first = await openSession(options, epoch);
-  return first.client;
-}
-
-export async function setClayEffectPrompt(effect: ClayEffect): Promise<void> {
-  if (!activeRealtimeClient) {
-    throw new Error('No active Decart effects session');
-  }
-  devLog('setPrompt', { effectId: effect.id, promptChars: effect.prompt.length });
-  await applyClayEffect(activeRealtimeClient, effect);
+  return remoteDelivered();
 }
 
 export function buildClayEffectSetInput(
@@ -277,15 +294,22 @@ export async function fetchClayEffectImage(src: string): Promise<Blob> {
   return image;
 }
 
-export async function applyClayEffect(
-  client: ClayEffectSetClient,
+export async function resolveClayEffectSetInput(
   effect: ClayEffect,
-  loadImage: ClayEffectImageLoader = fetchClayEffectImage,
-): Promise<void> {
+  loadImage?: ClayEffectImageLoader,
+): Promise<SetInput> {
+  if (effect.garmentImagePath) {
+    const loader = loadImage ?? loadCachedGarmentFile;
+    const garment = await loader(effect.garmentImagePath);
+    assertNonEmptyBlob(garment, effect.garmentImagePath);
+    return buildClayEffectSetInput(effect, garment);
+  }
+
   let image: Blob | null = null;
   if (effect.referenceImage) {
+    const loader = loadImage ?? fetchClayEffectImage;
     try {
-      image = await loadImage(effect.referenceImage.src);
+      image = await loader(effect.referenceImage.src);
     } catch (error) {
       devLog('reference image unavailable; using prompt only', {
         effectId: effect.id,
@@ -293,7 +317,245 @@ export async function applyClayEffect(
       });
     }
   }
-  await client.set(buildClayEffectSetInput(effect, image));
+  return buildClayEffectSetInput(effect, image);
+}
+
+export async function applyClayEffect(
+  client: ClayEffectSetClient,
+  effect: ClayEffect,
+  loadImage?: ClayEffectImageLoader,
+): Promise<void> {
+  const input = await resolveClayEffectSetInput(effect, loadImage);
+  await client.set(input);
+}
+
+interface OpenSessionAttemptOptions {
+  options: ConnectDecartEffectsOptions;
+  epoch: number;
+  initialInput: SetInput;
+  attempt: number;
+  preferredVideoCodec?: 'h264' | 'vp8' | 'vp9';
+}
+
+async function openSessionAttempt({
+  options,
+  epoch,
+  initialInput,
+  attempt,
+  preferredVideoCodec,
+}: OpenSessionAttemptOptions): Promise<{
+  client: RealTimeClient;
+  remoteDelivered: () => boolean;
+  beginQuietTeardown: () => void;
+}> {
+  const useFastMode = import.meta.env.VITE_DECART_SPEED?.trim() === 'fast';
+  const connectFn: RealtimeConnectFn =
+    options.realtimeConnect ??
+    ((stream, connectOpts) => decartClient.realtime.connect(stream, connectOpts));
+
+  let garmentApplied = false;
+  let latestRemoteStream: MediaStream | null = null;
+  let delivered = false;
+  let suppressCallbacks = false;
+
+  const deliverRemoteIfReady = () => {
+    if (!garmentApplied || !latestRemoteStream || delivered || suppressCallbacks) {
+      return;
+    }
+    if (epoch !== sessionEpoch) return;
+    delivered = true;
+    options.onRemoteStream(latestRemoteStream);
+  };
+
+  devLog('connect bare then set({ prompt, image, enhance: false })', {
+    effectId: options.effect.id,
+    model: effectsModel.name,
+    attempt,
+    speed: useFastMode ? 'fast' : 'standard',
+    preferredVideoCodec: preferredVideoCodec ?? 'default(h264)',
+    hasGarmentImage: initialInput.image instanceof Blob,
+    promptChars: initialInput.prompt?.length ?? 0,
+  });
+
+  // Clone tracks per LiveKit room because LiveKit's room.disconnect() stops
+  // published tracks by default; keeping localStream alive prevents dead tracks
+  // on codec fallback retries.
+  if (activePublishedCloneStream && activePublishedCloneStream !== options.localStream) {
+    stopClonedStream(activePublishedCloneStream);
+  }
+  const publishStream = cloneStreamForPublish(options.localStream);
+  activePublishedCloneStream = publishStream === options.localStream ? null : publishStream;
+
+  const rtClient = await connectFn(publishStream, {
+    model: effectsModel,
+    mirror: false,
+    ...(preferredVideoCodec ? { preferredVideoCodec } : {}),
+    ...(useFastMode ? { speed: 'fast' as const } : {}),
+    onRemoteStream: (remoteStream) => {
+      latestRemoteStream = remoteStream;
+      deliverRemoteIfReady();
+    },
+    onConnectionChange: (state) => {
+      if (!suppressCallbacks && epoch === sessionEpoch) {
+        options.onConnectionChange?.(state);
+      }
+    },
+  });
+
+  rtClient.on('error', (sdkError) => {
+    if (suppressCallbacks || epoch !== sessionEpoch) return;
+    const err =
+      sdkError instanceof Error
+        ? sdkError
+        : new Error(
+            String((sdkError as { message?: string })?.message || 'Decart realtime error'),
+          );
+    options.onError?.(err);
+  });
+
+  if (epoch !== sessionEpoch) {
+    suppressCallbacks = true;
+    try {
+      rtClient.disconnect();
+    } catch {
+      /* replaced */
+    }
+    return {
+      client: rtClient,
+      remoteDelivered: () => false,
+      beginQuietTeardown: () => {
+        suppressCallbacks = true;
+      },
+    };
+  }
+
+  activeRealtimeClient = rtClient;
+
+  try {
+    await rtClient.set(initialInput);
+  } catch (err) {
+    suppressCallbacks = true;
+    if (activeRealtimeClient === rtClient) {
+      activeRealtimeClient = null;
+    }
+    try {
+      rtClient.disconnect();
+    } catch {
+      /* cleanup */
+    }
+    throw err;
+  }
+
+  if (epoch !== sessionEpoch) {
+    suppressCallbacks = true;
+    if (activeRealtimeClient === rtClient) {
+      activeRealtimeClient = null;
+    }
+    try {
+      rtClient.disconnect();
+    } catch {
+      /* replaced */
+    }
+    return {
+      client: rtClient,
+      remoteDelivered: () => false,
+      beginQuietTeardown: () => {
+        suppressCallbacks = true;
+      },
+    };
+  }
+
+  garmentApplied = true;
+  deliverRemoteIfReady();
+
+  const waitMs = options.remoteAfterSetTimeoutMs ?? REMOTE_AFTER_SET_MS;
+  await waitForRemote(() => delivered, waitMs);
+
+  return {
+    client: rtClient,
+    remoteDelivered: () => delivered,
+    beginQuietTeardown: () => {
+      suppressCallbacks = true;
+    },
+  };
+}
+
+export async function connectDecartEffectsSession(
+  options: ConnectDecartEffectsOptions,
+): Promise<RealTimeClient> {
+  const epoch = ++sessionEpoch;
+  disconnectDecartEffectsSession({ keepLocalStream: options.localStream, nextEpoch: epoch });
+  activeLocalStream = options.localStream;
+
+  const initialInputPromise = resolveClayEffectSetInput(
+    options.effect,
+    options.loadImage,
+  );
+  await waitForCameraTrackReady(options.localStream);
+  if (epoch !== sessionEpoch) {
+    throw new Error('Decart VTON connect cancelled');
+  }
+
+  const initialInput = await initialInputPromise;
+  if (epoch !== sessionEpoch) {
+    throw new Error('Decart VTON connect cancelled');
+  }
+
+  const first = await openSessionAttempt({
+    options,
+    epoch,
+    initialInput,
+    attempt: 1,
+  });
+
+  if (first.remoteDelivered() || epoch !== sessionEpoch) {
+    return first.client;
+  }
+
+  devLog('no remote stream after first set(); retrying with preferredVideoCodec=vp8', {
+    effectId: options.effect.id,
+  });
+  first.beginQuietTeardown();
+  try {
+    first.client.disconnect();
+  } catch {
+    /* ignore */
+  }
+  if (activeRealtimeClient === first.client) {
+    activeRealtimeClient = null;
+  }
+  if (activePublishedCloneStream && activePublishedCloneStream !== options.localStream) {
+    stopClonedStream(activePublishedCloneStream);
+    activePublishedCloneStream = null;
+  }
+  await sleep(200);
+  if (epoch !== sessionEpoch) {
+    throw new Error('Decart VTON connect cancelled');
+  }
+
+  const second = await openSessionAttempt({
+    options,
+    epoch,
+    initialInput,
+    attempt: 2,
+    preferredVideoCodec: 'vp8',
+  });
+  return second.client;
+}
+
+export async function setClayEffectPrompt(
+  effect: ClayEffect,
+  loadImage?: ClayEffectImageLoader,
+): Promise<void> {
+  if (!activeRealtimeClient) {
+    throw new Error('No active Decart VTON session');
+  }
+  devLog('setGarmentLook', {
+    effectId: effect.id,
+    garmentImagePath: effect.garmentImagePath ?? null,
+    promptChars: effect.prompt.length,
+  });
+  await applyClayEffect(activeRealtimeClient, effect, loadImage);
 }
 
 export function disconnectDecartEffectsSession(options?: {
@@ -308,6 +570,10 @@ export function disconnectDecartEffectsSession(options?: {
       /* cleanup */
     }
     activeRealtimeClient = null;
+  }
+  if (activePublishedCloneStream && activePublishedCloneStream !== options?.keepLocalStream) {
+    stopClonedStream(activePublishedCloneStream);
+    activePublishedCloneStream = null;
   }
   if (activeLocalStream && activeLocalStream !== options?.keepLocalStream) {
     stopCameraStream(activeLocalStream);

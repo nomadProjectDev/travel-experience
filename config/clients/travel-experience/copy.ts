@@ -38,6 +38,9 @@ const copy: PlatformCopy = {
     retry: 'Reintentar',
     applyEffect: 'Aplicar {name}',
     sessionError: 'No pudimos abrir la experiencia en vivo.',
+    destinationsTitle: 'Elige un destino',
+    changeLook: 'Cambiar',
+    variantBackLabel: '← Volver',
   },
 };
 

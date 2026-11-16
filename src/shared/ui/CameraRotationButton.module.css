@@ -1,26 +1,28 @@
 .button {
   display: inline-flex;
-  min-width: 8.75rem;
-  min-height: 3.5rem;
+  min-width: 8.25rem;
+  min-height: 2.75rem;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  padding: 0.55rem 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding: 0.45rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
   font: inherit;
   font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  font-weight: 650;
+  letter-spacing: 0.02em;
   cursor: pointer;
   pointer-events: auto;
   touch-action: manipulation;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .button:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid rgb(var(--color-focus, 255 255 255));
   outline-offset: 2px;
 }
 
@@ -39,6 +41,84 @@
   min-width: 2.4rem;
   padding: 0.15rem 0.35rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.14);
   text-align: center;
+}
+
+.techHotspot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+  width: 24vw;
+  height: 10vh;
+  min-width: 7.5rem;
+  min-height: 4.5rem;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.rotationPillAnchor {
+  position: fixed;
+  top: max(1rem, env(safe-area-inset-top));
+  left: 0;
+  right: 0;
+  z-index: 81;
+  display: flex;
+  justify-content: center;
+  padding-inline: 0.75rem;
+  pointer-events: none;
+}
+
+.rotationPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(12, 16, 20, 0.92);
+  color: #fff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.rotationAngles {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.rotationAngle {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rotationAngle[data-active='true'] {
+  background: #fff;
+  color: #111;
+}
+
+.rotationClose {
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
 }

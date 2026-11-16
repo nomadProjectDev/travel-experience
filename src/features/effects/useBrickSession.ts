@@ -4,11 +4,11 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { requireClayEffect, type ClayEffect } from '@config/clients/travel-experience/effects';
 import {
-  DEFAULT_CLAY_EFFECT_ID,
-  getClayEffect,
-  type ClayEffect,
-} from '@config/clients/travel-experience/effects';
+  reduceTravelScreen,
+  type TravelScreen,
+} from '@config/clients/travel-experience/travelFlow';
 import { getCopy } from '@config';
 import type { CameraRotationDeg } from '@/core/media/cameraRotation';
 import {
@@ -24,7 +24,6 @@ import {
   setClayEffectPrompt,
 } from '@/services/decart-effects.service';
 
-export type BrickPhase = 'landing' | 'live';
 export type BrickStatus = 'idle' | 'connecting' | 'live' | 'switching' | 'error';
 
 const REMOTE_WATCHDOG_MS = 22_000;
@@ -45,19 +44,24 @@ function friendlyDecartError(message: string): string {
 
 export function useBrickSession() {
   const copy = getCopy().brickStudio;
-  const [phase, setPhase] = useState<BrickPhase>('landing');
+  const [screen, setScreen] = useState<TravelScreen>({ name: 'landing' });
   const [status, setStatus] = useState<BrickStatus>('idle');
-  const [activeEffectId, setActiveEffectId] = useState(DEFAULT_CLAY_EFFECT_ID);
-  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isOpeningCamera, setIsOpeningCamera] = useState(false);
 
+  const screenRef = useRef(screen);
   const runRef = useRef(0);
-  const switchRef = useRef(0);
   const localStreamRef = useRef<MediaStream | null>(null);
   const watchdogRef = useRef<number | null>(null);
   const errorRef = useRef<string | null>(null);
+  const openingRef = useRef(false);
+  const pendingLookRef = useRef<{ effect: ClayEffect; destinationId: string } | null>(null);
+
+  const setTravelScreen = useCallback((next: TravelScreen) => {
+    screenRef.current = next;
+    setScreen(next);
+  }, []);
 
   const reportError = useCallback((message: string) => {
     const next = friendlyDecartError(message);
@@ -80,21 +84,39 @@ export function useBrickSession() {
     if (localStreamRef.current === stream) localStreamRef.current = null;
   }, []);
 
-  const leave = useCallback(() => {
+  const stopLive = useCallback(() => {
     runRef.current += 1;
-    switchRef.current += 1;
+    openingRef.current = false;
+    pendingLookRef.current = null;
     clearWatchdog();
     disconnectDecartEffectsSession();
     releaseLocal(localStreamRef.current);
-    setLocalStream(null);
     setRemoteStream(null);
     errorRef.current = null;
     setError(null);
     setStatus('idle');
-    setPhase('landing');
     setIsOpeningCamera(false);
-    setActiveEffectId(DEFAULT_CLAY_EFFECT_ID);
   }, [clearWatchdog, releaseLocal]);
+
+  const returnToCountries = useCallback(() => {
+    stopLive();
+    setTravelScreen(reduceTravelScreen(screenRef.current, { type: 'back-to-countries' }));
+  }, [setTravelScreen, stopLive]);
+
+  const returnToLanding = useCallback(() => {
+    stopLive();
+    setTravelScreen(reduceTravelScreen(screenRef.current, { type: 'back-to-landing' }));
+  }, [setTravelScreen, stopLive]);
+
+  const openCountryHome = useCallback(() => {
+    setTravelScreen(reduceTravelScreen(screenRef.current, { type: 'begin' }));
+  }, [setTravelScreen]);
+
+  const chooseDestination = useCallback((destinationId: string) => {
+    errorRef.current = null;
+    setError(null);
+    setTravelScreen(reduceTravelScreen(screenRef.current, { type: 'choose-country', destinationId }));
+  }, [setTravelScreen]);
 
   useEffect(() => {
     return () => {
@@ -105,27 +127,37 @@ export function useBrickSession() {
     };
   }, [clearWatchdog, releaseLocal]);
 
-  const start = useCallback(async (cameraRotationDeg: CameraRotationDeg = 0) => {
-    if (isOpeningCamera) return;
+  const startLook = useCallback(async (
+    effect: ClayEffect,
+    cameraRotationDeg: CameraRotationDeg,
+    destinationId: string,
+  ) => {
+    if (openingRef.current) return;
     const run = ++runRef.current;
-    const effect = getClayEffect(DEFAULT_CLAY_EFFECT_ID);
+    openingRef.current = true;
+    pendingLookRef.current = { effect, destinationId };
     setIsOpeningCamera(true);
     disconnectDecartEffectsSession();
     releaseLocal(localStreamRef.current);
-    setLocalStream(null);
     errorRef.current = null;
     setError(null);
     setRemoteStream(null);
-    setActiveEffectId(effect.id);
+    setStatus('idle');
+
+    const failBeforeLive = (message: string) => {
+      if (run !== runRef.current) return;
+      openingRef.current = false;
+      pendingLookRef.current = null;
+      setIsOpeningCamera(false);
+      reportError(message);
+      setTravelScreen({ name: 'variant', destinationId });
+    };
 
     let rawStream: MediaStream;
     try {
-      rawStream = await requestEffectsCameraStream();
+      rawStream = await requestEffectsCameraStream(cameraRotationDeg);
     } catch (err) {
-      if (run !== runRef.current) return;
-      setIsOpeningCamera(false);
-      reportError(parseUserMediaError(err).message);
-      setPhase('landing');
+      failBeforeLive(parseUserMediaError(err).message);
       return;
     }
 
@@ -143,14 +175,11 @@ export function useBrickSession() {
       );
     } catch (err) {
       stopCameraStream(rawStream);
-      if (run !== runRef.current) return;
-      setIsOpeningCamera(false);
       const message =
         err instanceof Error
           ? err.message
           : 'No se pudo orientar la cámara para el efecto en vivo.';
-      reportError(message);
-      setPhase('landing');
+      failBeforeLive(message);
       return;
     }
 
@@ -161,10 +190,11 @@ export function useBrickSession() {
 
     releaseLocal(localStreamRef.current);
     localStreamRef.current = stream;
-    setLocalStream(stream);
-    setPhase('live');
-    setStatus('connecting');
+    openingRef.current = false;
+    pendingLookRef.current = null;
     setIsOpeningCamera(false);
+    setTravelScreen({ name: 'live', destinationId, effectId: effect.id });
+    setStatus('connecting');
     clearWatchdog();
     watchdogRef.current = window.setTimeout(() => {
       if (run !== runRef.current || errorRef.current) return;
@@ -194,37 +224,75 @@ export function useBrickSession() {
       const message = err instanceof Error ? err.message : copy?.sessionError;
       reportError(message || 'No pudimos abrir el efecto en vivo.');
     }
-  }, [clearWatchdog, copy?.sessionError, isOpeningCamera, releaseLocal, reportError]);
+  }, [clearWatchdog, copy?.sessionError, releaseLocal, reportError, setTravelScreen]);
 
-  const selectEffect = useCallback(async (effect: ClayEffect) => {
-    if (effect.id === activeEffectId && status !== 'error') return;
-    if (status === 'connecting' || status === 'idle') return;
-    const ticket = ++switchRef.current;
-    setActiveEffectId(effect.id);
-    setStatus('switching');
+  const chooseLook = useCallback((effectId: string, cameraRotationDeg: CameraRotationDeg) => {
+    const next = reduceTravelScreen(screenRef.current, { type: 'choose-look', effectId });
+    if (next.name !== 'live') return;
+    const effect = requireClayEffect(next.effectId);
+    void startLook(effect, cameraRotationDeg, next.destinationId);
+  }, [startLook]);
+
+  const retry = useCallback((cameraRotationDeg: CameraRotationDeg) => {
+    const current = screenRef.current;
+    if (current.name !== 'live') return;
+    openingRef.current = false;
+    const effect = requireClayEffect(current.effectId);
+    void startLook(effect, cameraRotationDeg, current.destinationId);
+  }, [startLook]);
+
+  const reorient = useCallback((cameraRotationDeg: CameraRotationDeg) => {
+    const current = screenRef.current;
+    if (current.name === 'live') {
+      openingRef.current = false;
+      const effect = requireClayEffect(current.effectId);
+      void startLook(effect, cameraRotationDeg, current.destinationId);
+      return;
+    }
+    if (openingRef.current && pendingLookRef.current) {
+      const pending = pendingLookRef.current;
+      openingRef.current = false;
+      void startLook(pending.effect, cameraRotationDeg, pending.destinationId);
+    }
+  }, [startLook]);
+
+  const switchLook = useCallback(async (effectId: string) => {
+    const current = screenRef.current;
+    if (current.name !== 'live' || current.effectId === effectId) return;
+    const run = runRef.current;
+    const effect = requireClayEffect(effectId);
     errorRef.current = null;
     setError(null);
+    setStatus('switching');
+    setTravelScreen({
+      name: 'live',
+      destinationId: current.destinationId,
+      effectId: effect.id,
+    });
     try {
       await setClayEffectPrompt(effect);
-      if (ticket !== switchRef.current) return;
+      if (run !== runRef.current) return;
       setStatus('live');
     } catch (err) {
-      if (ticket !== switchRef.current) return;
-      const message = err instanceof Error ? err.message : 'No se pudo cambiar el efecto.';
-      reportError(message);
+      if (run !== runRef.current) return;
+      const message = err instanceof Error ? err.message : copy?.sessionError;
+      reportError(message || 'No pudimos cambiar el vestuario en vivo.');
     }
-  }, [activeEffectId, reportError, status]);
+  }, [copy?.sessionError, reportError, setTravelScreen]);
 
   return {
-    phase,
+    screen,
     status,
-    activeEffectId,
-    localStream,
     remoteStream,
     error,
     isOpeningCamera,
-    start,
-    selectEffect,
-    leave,
+    openCountryHome,
+    chooseDestination,
+    chooseLook,
+    switchLook,
+    returnToCountries,
+    returnToLanding,
+    retry,
+    reorient,
   };
 }

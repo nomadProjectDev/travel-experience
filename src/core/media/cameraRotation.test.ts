@@ -1,8 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   CAMERA_ROTATION_ANGLES,
   CAMERA_ROTATION_STORAGE_KEY,
   computeCameraContainPlan,
+  drawContainedCameraFrame,
   nextCameraRotationDeg,
   normalizeCameraRotationDeg,
   resolveCameraRotationDeg,
@@ -78,5 +79,46 @@ describe('camera rotation', () => {
       drawWidth: 1280,
       drawHeight: 720,
     });
+  });
+
+  it('pre-flips horizontally when mirrorHorizontal is enabled so local and Decart streams never double-flip', () => {
+    const scale = vi.fn();
+    const ctx = {
+      setTransform: vi.fn(),
+      fillRect: vi.fn(),
+      translate: vi.fn(),
+      scale,
+      rotate: vi.fn(),
+      drawImage: vi.fn(),
+      fillStyle: '',
+    } as unknown as CanvasRenderingContext2D;
+    const canvas = { width: 1280, height: 720 } as HTMLCanvasElement;
+
+    drawContainedCameraFrame(ctx, canvas, {} as CanvasImageSource, 1280, 720, 0, true);
+    expect(scale).toHaveBeenCalledWith(-1, 1);
+  });
+
+  it('applies mirrorHorizontal in upright screen space before quarter-turn rotate so vertical gravity is preserved', () => {
+    const ops: string[] = [];
+    const ctx = {
+      setTransform: vi.fn(() => ops.push('setTransform')),
+      fillRect: vi.fn(),
+      translate: vi.fn(() => ops.push('translate')),
+      scale: vi.fn((sx: number, sy: number) => ops.push(`scale(${sx},${sy})`)),
+      rotate: vi.fn((rad: number) => ops.push(`rotate(${Math.round((rad * 180) / Math.PI)})`)),
+      drawImage: vi.fn(() => ops.push('drawImage')),
+      fillStyle: '',
+    } as unknown as CanvasRenderingContext2D;
+    const canvas = { width: 1280, height: 720 } as HTMLCanvasElement;
+
+    drawContainedCameraFrame(ctx, canvas, {} as CanvasImageSource, 1280, 720, 90, true);
+    expect(ops).toEqual([
+      'setTransform',
+      'translate',
+      'scale(-1,1)',
+      'rotate(90)',
+      'drawImage',
+      'setTransform',
+    ]);
   });
 });

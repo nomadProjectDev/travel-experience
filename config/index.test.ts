@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { getManifest, isFeatureEnabled } from './index';
 
@@ -45,9 +46,11 @@ describe('manifest resolution', () => {
       'México · Perú · Colombia · Argentina · Chile · Puerto Rico',
     );
     expect(manifest.brand.landingSrc).toBe(
-      '/brand/travel-experience/landing/inicio-mupi-vertical.png',
+      '/brand/travel-experience/landing/experiencia-cultural-latinoamerica.jpg',
     );
     expect(manifest.brand.landingPlate).toBe(true);
+    expect(manifest.brand.landingAlt).toBe('Experiencia cultural. Latinoamérica.');
+    expect(existsSync(`public${manifest.brand.landingSrc}`)).toBe(true);
     expect(manifest.copy.brickStudio?.liveBadge).toBe('En vivo');
   });
 });
