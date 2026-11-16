@@ -1,19 +1,21 @@
-# AGENTS.md — navidad effects MUPI
+# AGENTS.md — travel experience MUPI
 
 Guidance for AI agents and developers working in this repo.
 
 ## What this is
 
-**Taller de Barro**: a portrait, touch-first 1080×1920 MUPI cloned from the brick-effects kiosk.
-The live path is Decart **Lucy 2.6** creative effects (restyle), not garment VTON.
-The theme is a Christmas claymation world. Prompts lock "handmade stop-motion claymation puppet"
-and "plasticine" so the model stays on that look, and keep the person recognizable.
+**NO.MAD LAB Travel Experience**: a portrait, touch-first 1080×1920 MUPI cloned from
+the navidad effects kiosk. The live path is still Decart **Lucy 2.6** creative effects
+(restyle). The delivery is a design pack: an approved landing plate, six destination
+screens, and reference stills for México, Perú, Colombia, Argentina, Chile, and
+Puerto Rico.
 
-Flow: landing → camera permission → live Lucy session → 70% video + 30% character rail.
-Tapping a character calls `setPrompt` on the open session.
+Flow today: landing plate → camera permission → live Lucy session → character rail.
+Tapping a look calls `setPrompt` on the open session and sends that reference still.
+The destination grid and the per-country picker from the mockups are not built yet.
 
-The active client pack is **`navidad`**. Clothing and eyewear packs remain in the tree
-from the clone and are not the default. `data-display="mupi"` comes from the manifest.
+The active client pack is **`travel-experience`**. Navidad, clothing, and eyewear
+remain in the tree and are not the default. `data-display="mupi"` comes from the manifest.
 
 ## Boundaries — do not cross
 
@@ -36,8 +38,8 @@ Do **not** hardcode brand strings in TSX; use `getManifest().copy` / `getWardrob
 | Featured / alternate frame picks for the PDP | `src/features/capture/eyewearShop.ts` |
 | Capture + generation orchestration | `src/features/capture/StartScreen.tsx`, `CameraCapture.tsx` |
 | Live Decart effects | `src/features/effects/BrickStudio.tsx`, `useBrickSession.ts`, `src/services/decart-effects.service.ts` |
-| Effect catalog | `config/clients/navidad/effects.ts` |
-| Portrait display CSS | `src/styles/kiosk-display.css`, `src/styles/themes/navidad.css` |
+| Effect catalog | `config/clients/travel-experience/effects.ts` |
+| Portrait display CSS | `src/styles/kiosk-display.css`, `src/styles/themes/travel-experience.css` |
 | Camera rotation | `src/shared/lib/camera.ts`, `VITE_CAMERA_ROTATION_DEG` |
 
 ## Client pack contract (`PlatformManifest`)
@@ -49,7 +51,7 @@ Do **not** hardcode brand strings in TSX; use `getManifest().copy` / `getWardrob
 Resolve at runtime with `getManifest()`, `getWardrobe()`, `getCopy()` from `@config`.
 
 Builds import **one** pack via the Vite alias `@client-manifest` → `config/clients/<id>/manifest.ts`.
-The default is **`navidad`** (`tooling/vite.config.ts`); `VITE_CLIENT_ID` still overrides it.
+The default is **`travel-experience`** (`tooling/vite.config.ts`); `VITE_CLIENT_ID` still overrides it.
 The full registry (`config/registry.ts`) is used only by tests and `verify-clients`.
 
 ## Commands

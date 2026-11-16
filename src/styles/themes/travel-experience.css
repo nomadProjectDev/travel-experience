@@ -1,0 +1,34 @@
+/**
+ * NO.MAD LAB Travel Experience skin.
+ * Landscape green and cream, matching the approved MUPI plate.
+ * This is the token skin. It does not rebuild the destination grid.
+ */
+[data-theme='travel-experience'] {
+  --vf-bg-0: 16 42 34;
+  --vf-bg-1: 28 64 48;
+  --vf-surface-1: 244 239 228;
+  --vf-surface-2: 214 164 84;
+  --vf-rail: 18 36 30;
+  --vf-border-soft: 244 239 228;
+  --vf-border-strong: 214 164 84;
+  --vf-text-strong: 255 250 244;
+  --vf-text: 255 250 244;
+  --vf-text-muted: 232 214 186;
+  --vf-text-subtle: 214 164 84;
+  --vf-accent: 244 239 228;
+  --vf-accent-strong: 214 164 84;
+  --vf-accent-ink: 28 22 18;
+  --vf-danger: 176 54 48;
+  --vf-danger-bg: 255 228 220;
+  --vf-success: 31 107 74;
+  --vf-focus: 214 164 84;
+  --vf-overlay: 12 24 20;
+  --vf-surface-glow: none;
+  --vf-shadow-soft: 0 10px 24px rgb(12 24 20 / 0.28);
+  --vf-shadow-premium: 0 14px 28px rgb(12 24 20 / 0.22);
+  --vf-radius-sm: 1.1rem;
+  --vf-radius-md: 1.6rem;
+  --vf-radius-lg: 2.2rem;
+  --touch-target: 3rem;
+  --vf-font-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+}

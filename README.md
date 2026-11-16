@@ -1,9 +1,9 @@
-# Taller de Barro
+# Travel Experience
 
-Portrait MUPI of live creative effects in a Christmas claymation world. Cloned from
-the brick-effects kiosk. The camera feeds Decart Lucy 2.6; a rail of characters
-(elf, Papá Noel, the Three Kings, and the rest of the North Pole) swaps the look
-without reconnecting.
+Portrait MUPI for NO.MAD LAB Travel Experience. Cloned from the navidad effects
+kiosk and detached from that remote. The camera still feeds Decart Lucy 2.6.
+The rail lists the delivered destination looks. The six-card landing and the
+per-country picker are not built yet.
 
 ## Quick start
 
@@ -16,13 +16,13 @@ npm run dev
 Open **http://localhost:8080** in Chrome. Camera needs localhost or HTTPS.
 Port busy? `PORT=8081 npm run dev`.
 
-Plain `npm run dev` lands on the **navidad** pack.
+Plain `npm run dev` lands on the **travel-experience** pack.
 
 ## The flow
 
-1. **Landing** — "Navidad en plastilina".
-2. **Live** — camera plus Lucy 2.6, starting as a claymation Christmas elf.
-3. **Rail** — clay costumes: elf, Papá Noel, King, reindeer, snowman, nutcracker, angel, gingerbread, Arctic explorer. The person stays recognizable.
+1. **Landing** — approved plate, "NO.MAD LAB / Travel Experience", then **Comenzar experiencia**.
+2. **Live** — camera plus Lucy 2.6. The first look is México · Hombre.
+3. **Rail** — twelve delivered looks. Tapping one calls `setPrompt` and sends that look's reference still. The person stays recognizable.
 
 ## Environment
 
@@ -32,7 +32,7 @@ never reach the browser bundle.
 | Variable | Purpose |
 |----------|---------|
 | `GEMINI_API_KEY` / `GOOGLE_API_KEY` | Server Gemini auth |
-| `VITE_CLIENT_ID` | Active client pack — defaults to `navidad` |
+| `VITE_CLIENT_ID` | Active client pack — defaults to `travel-experience` |
 | `API_KEY` | Server `/api/*` gate (**required** when `NODE_ENV=production`) |
 | `VITE_KIOSK_API_KEY` | Browser → `/api/*`; must match `API_KEY` in production (legacy name) |
 | `GEMINI_IMAGE_MODEL` / `GEMINI_IMAGE_SIZE` | Image model + size, latency-first defaults |

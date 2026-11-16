@@ -8,7 +8,7 @@ const toolingDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(toolingDir, '..');
 
 const registeredClients = new Set(REGISTERED_CLIENT_IDS);
-const requestedClient = process.env.VITE_CLIENT_ID?.trim() || 'navidad';
+const requestedClient = process.env.VITE_CLIENT_ID?.trim() || 'travel-experience';
 
 if (!registeredClients.has(requestedClient)) {
   const known = [...registeredClients].sort().join(', ');

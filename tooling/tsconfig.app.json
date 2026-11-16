@@ -16,7 +16,7 @@
       "@/*": ["../src/*"],
       "@config/*": ["../config/*"],
       "@config": ["../config/index.ts"],
-      "@client-manifest": ["../config/clients/navidad/manifest.ts"]
+      "@client-manifest": ["../config/clients/travel-experience/manifest.ts"]
     },
     "allowImportingTsExtensions": true,
     "noEmit": true,

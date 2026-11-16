@@ -2,15 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { getManifest, isFeatureEnabled } from './index';
 
 describe('manifest resolution', () => {
-  it('resolves navidad effects as the default client', () => {
+  it('resolves travel experience as the default client', () => {
     const manifest = getManifest();
-    expect(manifest.clientId).toBe('navidad');
+    expect(manifest.clientId).toBe('travel-experience');
     expect(manifest.wardrobe).toEqual([]);
-    expect(manifest.copy.landing.ctaLabel).toBe('Empezar');
+    expect(manifest.copy.landing.ctaLabel).toBe('Comenzar experiencia');
   });
 
   it('resolves theme from client manifest', () => {
-    expect(getManifest().theme).toBe('navidad');
+    expect(getManifest().theme).toBe('travel-experience');
   });
 
   it('runs the web try-on flow without background audio', () => {
@@ -35,12 +35,19 @@ describe('manifest resolution', () => {
     expect(isFeatureEnabled('wardrobeFeed')).toBe(false);
   });
 
-  it('opens on the multi-style festive landing', () => {
+  it('opens on the Travel Experience landing', () => {
     const manifest = getManifest();
     expect(`${manifest.copy.landing.titleLine1} ${manifest.copy.landing.titleLine2}`).toBe(
-      'Elige tu Navidad',
+      'Travel Experience',
     );
-    expect(manifest.copy.landing.subtitle).toMatch(/personaje navideño adorable/i);
+    expect(manifest.copy.landing.eyebrow).toBe('NO.MAD LAB');
+    expect(manifest.copy.landing.subtitle).toBe(
+      'México · Perú · Colombia · Argentina · Chile · Puerto Rico',
+    );
+    expect(manifest.brand.landingSrc).toBe(
+      '/brand/travel-experience/landing/inicio-mupi-vertical.png',
+    );
+    expect(manifest.brand.landingPlate).toBe(true);
     expect(manifest.copy.brickStudio?.liveBadge).toBe('En vivo');
   });
 });

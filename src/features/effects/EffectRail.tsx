@@ -5,7 +5,7 @@ import {
   effectsInGroup,
   type ClayEffect,
   type ClayEffectGroup,
-} from '@config/clients/navidad/effects';
+} from '@config/clients/travel-experience/effects';
 import { cn } from '@/shared/lib/utils';
 import styles from './EffectRail.module.css';
 

@@ -3,8 +3,13 @@ import { REGISTERED_CLIENT_IDS, resolveManifestForClient } from './registry';
 import { CLAY_EFFECTS } from './clients/navidad/effects';
 
 describe('client pack isolation', () => {
-  it('registers the eyewear, clothing, and navidad packs', () => {
-    expect(REGISTERED_CLIENT_IDS).toEqual(['eyewear', 'clothing', 'navidad']);
+  it('registers the eyewear, clothing, navidad, and travel packs', () => {
+    expect(REGISTERED_CLIENT_IDS).toEqual([
+      'eyewear',
+      'clothing',
+      'navidad',
+      'travel-experience',
+    ]);
   });
 
   it('clothing pack configures full-body framing, Decart VTON prompts, and disables environment scenes', () => {
@@ -156,5 +161,23 @@ describe('client pack isolation', () => {
     expect(JSON.stringify(manifest.copy)).not.toMatch(/lucy|decart/i);
     expect(manifest.copy.landing.ctaLabel).toBe('Empezar');
     expect(CLAY_EFFECTS.length).toBeGreaterThanOrEqual(8);
+  });
+
+  it('travel pack is the NO.MAD LAB destination kiosk', () => {
+    const manifest = resolveManifestForClient('travel-experience');
+    expect(manifest.theme).toBe('travel-experience');
+    expect(manifest.display).toEqual({
+      mode: 'mupi',
+      targetWidth: 1080,
+      targetHeight: 1920,
+    });
+    expect(manifest.features.backgroundAudio).toBe(false);
+    expect(manifest.wardrobe).toEqual([]);
+    expect(manifest.brand.productName).toBe('Travel Experience');
+    expect(manifest.brand.logoAlt).toBe('NO.MAD LAB');
+    expect(manifest.brand.landingPlate).toBe(true);
+    expect(manifest.copy.brickStudio?.restylesTitle).toBe('Vestuario');
+    expect(manifest.copy.brickStudio?.restart).toBe('Volver');
+    expect(manifest.copy.landing.ctaLabel).toBe('Comenzar experiencia');
   });
 });

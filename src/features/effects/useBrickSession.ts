@@ -8,7 +8,7 @@ import {
   DEFAULT_CLAY_EFFECT_ID,
   getClayEffect,
   type ClayEffect,
-} from '@config/clients/navidad/effects';
+} from '@config/clients/travel-experience/effects';
 import { getCopy } from '@config';
 import type { CameraRotationDeg } from '@/core/media/cameraRotation';
 import {

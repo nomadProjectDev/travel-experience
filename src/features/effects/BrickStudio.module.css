@@ -260,6 +260,26 @@
   outline-offset: 3px;
 }
 
+:global([data-theme='travel-experience']) .cta {
+  background: #f4efe4;
+  color: #1c1612;
+  font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  box-shadow: 0 10px 24px rgb(0 0 0 / 0.28);
+}
+
+:global([data-theme='travel-experience']) .cta:hover:not(:disabled),
+:global([data-theme='travel-experience']) .cta:active:not(:disabled) {
+  background: #fffaf3;
+  color: #1c1612;
+  box-shadow: 0 10px 24px rgb(0 0 0 / 0.28);
+}
+
+:global([data-theme='travel-experience']) .cta:focus-visible {
+  outline-color: #d6a454;
+}
+
 .privacy,
 .error {
   margin: 0;

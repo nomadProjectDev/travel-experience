@@ -11,7 +11,9 @@ const root = path.resolve(__dirname, '..');
 const registryPath = path.join(root, 'config', 'registry.ts');
 
 const registrySrc = fs.readFileSync(registryPath, 'utf8');
-const clientIds = [...registrySrc.matchAll(/^\s+([a-z][a-z0-9-]*):\s+\w+Manifest,/gm)].map((m) => m[1]);
+const clientIds = [
+  ...registrySrc.matchAll(/^\s+'?([a-z][a-z0-9-]*)'?:\s+\w+Manifest,/gm),
+].map((m) => m[1]);
 
 if (clientIds.length === 0) {
   console.error('No clients found in config/registry.ts');

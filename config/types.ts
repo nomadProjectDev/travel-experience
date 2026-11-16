@@ -56,7 +56,13 @@ export type StudioChrome = 'side-rail' | 'bottom-bar';
 export type PortraitFraming = 'full-body' | 'face';
 
 /** Document `data-theme` skin — maps to `src/styles/themes/<name>.css`. */
-export type PlatformTheme = 'default' | 'lifestyle-sport' | 'dark' | 'eyewear' | 'navidad';
+export type PlatformTheme =
+  | 'default'
+  | 'lifestyle-sport'
+  | 'dark'
+  | 'eyewear'
+  | 'navidad'
+  | 'travel-experience';
 
 export interface PlatformDisplay {
   mode: 'mupi';
@@ -113,6 +119,14 @@ export interface PlatformBrand {
   logoSrc: string;
   logoAlt: string;
   poweredBy?: string;
+  /** Full-bleed landing image under `public/`. */
+  landingSrc?: string;
+  /**
+   * The landing image is a finished campaign plate.
+   * BrickStudio keeps the real CTA and skips the HTML hero so the plate
+   * is not titled twice.
+   */
+  landingPlate?: boolean;
 }
 
 /**

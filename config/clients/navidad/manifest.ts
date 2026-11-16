@@ -26,6 +26,7 @@ const manifest: PlatformManifest = {
     productName: 'Navidad en vivo',
     logoSrc: '',
     logoAlt: 'Navidad en vivo',
+    landingSrc: '/brand/navidad/set.jpg',
   },
   wardrobe,
   copy,

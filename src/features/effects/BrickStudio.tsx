@@ -131,8 +131,11 @@ function BrickStudio() {
   }, [preview, session.remoteStream]);
 
   if (!studio) {
-    throw new Error('The navidad client pack requires copy.brickStudio.');
+    throw new Error('This effects client pack requires copy.brickStudio.');
   }
+
+  const landingSrc = manifest.brand.landingSrc;
+  const landingPlate = manifest.brand.landingPlate === true;
 
   if (session.phase === 'landing') {
     return (
@@ -175,25 +178,35 @@ function BrickStudio() {
             </div>
           </div>
         ) : null}
-        <img
-          className={styles.set}
-          src="/brand/navidad/set.jpg"
-          alt=""
-          fetchPriority="high"
-          decoding="async"
-        />
-        <div className={styles.scrim} aria-hidden />
-        <p className={styles.brandLabel}>{manifest.brand.productName}</p>
+        {landingSrc ? (
+          <img
+            className={styles.set}
+            src={landingSrc}
+            alt={
+              landingPlate
+                ? `${manifest.brand.logoAlt}. ${manifest.brand.productName}`
+                : ''
+            }
+            fetchPriority="high"
+            decoding="async"
+          />
+        ) : null}
+        {landingPlate ? null : <div className={styles.scrim} aria-hidden />}
+        {landingPlate ? null : (
+          <p className={styles.brandLabel}>{manifest.brand.productName}</p>
+        )}
         <div className={styles.landingContent}>
-          <header className={styles.hero}>
-            <p className={styles.eyebrow}>{copy.landing.eyebrow}</p>
-            <h1 className={styles.title}>
-              {copy.landing.titleLine1}
-              <br />
-              <span className={styles.titleAccent}>{copy.landing.titleLine2}</span>
-            </h1>
-            <p className={styles.subtitle}>{copy.landing.subtitle}</p>
-          </header>
+          {landingPlate ? null : (
+            <header className={styles.hero}>
+              <p className={styles.eyebrow}>{copy.landing.eyebrow}</p>
+              <h1 className={styles.title}>
+                {copy.landing.titleLine1}
+                <br />
+                <span className={styles.titleAccent}>{copy.landing.titleLine2}</span>
+              </h1>
+              <p className={styles.subtitle}>{copy.landing.subtitle}</p>
+            </header>
+          )}
           <div className={styles.plate}>
             <button
               type="button"

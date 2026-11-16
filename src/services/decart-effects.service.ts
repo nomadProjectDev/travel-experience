@@ -24,7 +24,7 @@ import {
   type RealTimeClient,
   type SetInput,
 } from '@decartai/sdk';
-import type { ClayEffect } from '@config/clients/navidad/effects';
+import type { ClayEffect } from '@config/clients/travel-experience/effects';
 import { requestCameraStream, stopCameraStream } from '@/shared/lib/camera';
 
 const effectsModel = models.realtime('lucy-2.6');
