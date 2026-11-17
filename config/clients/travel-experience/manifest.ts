@@ -26,7 +26,7 @@ const manifest: PlatformManifest = {
     productName: 'Travel Experience',
     logoSrc: '',
     logoAlt: 'NO.MAD LAB',
-    landingSrc: '/brand/travel-experience/landing/experiencia-cultural-latinoamerica.jpg',
+    landingSrc: '/brand/travel-experience/landing/experiencia-cultural-latinoamerica.png',
     landingPlate: true,
     landingAlt: 'Experiencia cultural. Latinoamérica.',
   },

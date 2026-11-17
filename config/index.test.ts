@@ -46,7 +46,7 @@ describe('manifest resolution', () => {
       'México · Perú · Colombia · Argentina · Chile · Puerto Rico',
     );
     expect(manifest.brand.landingSrc).toBe(
-      '/brand/travel-experience/landing/experiencia-cultural-latinoamerica.jpg',
+      '/brand/travel-experience/landing/experiencia-cultural-latinoamerica.png',
     );
     expect(manifest.brand.landingPlate).toBe(true);
     expect(manifest.brand.landingAlt).toBe('Experiencia cultural. Latinoamérica.');
