@@ -129,6 +129,16 @@ export interface PlatformBrand {
   landingPlate?: boolean;
   /** Accessible name when the plate already contains its title. */
   landingAlt?: string;
+  /**
+   * Left-side title/copy artwork for split landing plates (background in
+   * `landingSrc`, typography in this asset — not duplicated in HTML).
+   */
+  landingArtSrc?: string;
+  /**
+   * Right-side figure cutout for three-layer landings (`landingSrc` is the
+   * empty plate only; transparent PNG with alpha).
+   */
+  landingFiguresSrc?: string;
 }
 
 /**
@@ -157,6 +167,10 @@ export interface PlatformCopy {
     statusLines: string[];
     ctaLabel: string;
     ctaBusyLabel: string;
+    /** Photo landing. Omit when the plate image already contains the title. */
+    plateEyebrow?: string;
+    plateTitle?: string;
+    plateTagline?: string;
   };
   generating: {
     statusLines: string[];

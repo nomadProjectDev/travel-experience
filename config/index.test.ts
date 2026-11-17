@@ -46,11 +46,27 @@ describe('manifest resolution', () => {
       'México · Perú · Colombia · Argentina · Chile · Puerto Rico',
     );
     expect(manifest.brand.landingSrc).toBe(
-      '/brand/travel-experience/landing/experiencia-cultural-latinoamerica.png',
+      '/brand/travel-experience/landing/peach-studio-background.png',
+    );
+    expect(manifest.brand.landingArtSrc).toBe(
+      '/brand/travel-experience/landing/title-block-left.png',
+    );
+    expect(manifest.brand.landingFiguresSrc).toBe(
+      '/brand/travel-experience/landing/figuras-latinoamerica.png',
+    );
+    expect(manifest.copy.landing.plateEyebrow).toBe('Experiencia cultural');
+    expect(manifest.copy.landing.plateTitle).toBe('Latinoamérica');
+    expect(manifest.copy.landing.plateTagline).toBe('Tradición · Identidad · Cultura');
+    expect(manifest.copy.landing.privacyNote).toBe(
+      'La cámara solo se usa durante esta sesión.',
     );
     expect(manifest.brand.landingPlate).toBe(true);
-    expect(manifest.brand.landingAlt).toBe('Experiencia cultural. Latinoamérica.');
+    expect(manifest.brand.landingAlt).toBe(
+      'Experiencia cultural Latinoamérica. Tradición, identidad, cultura.',
+    );
     expect(existsSync(`public${manifest.brand.landingSrc}`)).toBe(true);
+    expect(existsSync(`public${manifest.brand.landingArtSrc}`)).toBe(true);
+    expect(existsSync(`public${manifest.brand.landingFiguresSrc}`)).toBe(true);
     expect(manifest.copy.brickStudio?.liveBadge).toBe('En vivo');
   });
 });

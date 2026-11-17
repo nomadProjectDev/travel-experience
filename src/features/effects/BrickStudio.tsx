@@ -72,54 +72,124 @@ function BrickStudio() {
   }
 
   const landingSrc = manifest.brand.landingSrc;
+  const landingArtSrc = manifest.brand.landingArtSrc;
+  const landingFiguresSrc = manifest.brand.landingFiguresSrc;
   const landingPlate = manifest.brand.landingPlate === true;
+  const plateTitle = copy.landing.plateTitle;
+  const layeredPlate =
+    landingPlate &&
+    Boolean(landingSrc && landingArtSrc && landingFiguresSrc);
+  const photoBackdrop = Boolean(plateTitle && landingSrc && !layeredPlate);
 
   let view: ReactNode;
 
   if (session.screen.name === 'landing') {
     view = (
-      <div className={styles.landing}>
-        {landingSrc ? (
-          <img
-            className={styles.set}
-            src={landingSrc}
-            alt={
-              manifest.brand.landingAlt ??
-              (landingPlate
-                ? `${manifest.brand.logoAlt}. ${manifest.brand.productName}`
-                : '')
-            }
-            fetchPriority="high"
-            decoding="async"
-          />
-        ) : null}
-        {landingPlate ? null : <div className={styles.scrim} aria-hidden />}
-        {landingPlate ? null : (
-          <p className={styles.brandLabel}>{manifest.brand.productName}</p>
+      <div
+        className={cn(styles.landing, layeredPlate && styles.landingPlate)}
+        style={
+          photoBackdrop
+            ? ({ '--landing-photo': `url("${landingSrc}")` } as CSSProperties)
+            : undefined
+        }
+      >
+        {layeredPlate ? (
+          <>
+            <img
+              className={styles.landingBg}
+              src={landingSrc}
+              alt=""
+              aria-hidden
+              fetchPriority="high"
+              decoding="async"
+            />
+            <div className={styles.landingRow}>
+              <div className={styles.landingArtPlate}>
+                <img
+                  className={styles.landingArt}
+                  src={landingArtSrc}
+                  alt={
+                    manifest.brand.landingAlt ??
+                    `${manifest.brand.logoAlt}. ${manifest.brand.productName}`
+                  }
+                  decoding="async"
+                />
+                <button
+                  type="button"
+                  className={styles.landingCtaHit}
+                  onClick={session.openCountryHome}
+                  aria-label={copy.landing.ctaLabel}
+                />
+              </div>
+              <div className={styles.landingFigures}>
+                <img
+                  src={landingFiguresSrc}
+                  alt=""
+                  aria-hidden
+                  decoding="async"
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {photoBackdrop || !landingSrc ? null : (
+              <img
+                className={styles.set}
+                src={landingSrc}
+                alt={
+                  manifest.brand.landingAlt ??
+                  (landingPlate
+                    ? `${manifest.brand.logoAlt}. ${manifest.brand.productName}`
+                    : '')
+                }
+                fetchPriority="high"
+                decoding="async"
+              />
+            )}
+            {landingPlate || photoBackdrop ? null : (
+              <div className={styles.scrim} aria-hidden />
+            )}
+            {landingPlate || photoBackdrop ? null : (
+              <p className={styles.brandLabel}>{manifest.brand.productName}</p>
+            )}
+            <div className={styles.landingContent}>
+              {landingPlate && !photoBackdrop ? null : (
+                <header className={styles.hero}>
+                  {photoBackdrop ? (
+                    <>
+                      <p className={styles.eyebrow}>{copy.landing.plateEyebrow}</p>
+                      <h1 className={styles.title}>{plateTitle}</h1>
+                      <p className={styles.subtitle}>{copy.landing.plateTagline}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className={styles.eyebrow}>{copy.landing.eyebrow}</p>
+                      <h1 className={styles.title}>
+                        {copy.landing.titleLine1}
+                        <br />
+                        <span className={styles.titleAccent}>
+                          {copy.landing.titleLine2}
+                        </span>
+                      </h1>
+                      <p className={styles.subtitle}>{copy.landing.subtitle}</p>
+                    </>
+                  )}
+                </header>
+              )}
+              <div className={styles.plate}>
+                <button
+                  type="button"
+                  className={styles.cta}
+                  onClick={session.openCountryHome}
+                >
+                  {copy.landing.ctaLabel}
+                </button>
+                <p className={styles.privacy}>{copy.landing.privacyNote}</p>
+              </div>
+            </div>
+          </>
         )}
-        <div className={styles.landingContent}>
-          {landingPlate ? null : (
-            <header className={styles.hero}>
-              <p className={styles.eyebrow}>{copy.landing.eyebrow}</p>
-              <h1 className={styles.title}>
-                {copy.landing.titleLine1}
-                <br />
-                <span className={styles.titleAccent}>{copy.landing.titleLine2}</span>
-              </h1>
-              <p className={styles.subtitle}>{copy.landing.subtitle}</p>
-            </header>
-          )}
-          <div className={styles.plate}>
-            <button
-              type="button"
-              className={styles.cta}
-              onClick={session.openCountryHome}
-            >
-              {copy.landing.ctaLabel}
-            </button>
-            <p className={styles.privacy}>{copy.landing.privacyNote}</p>
-          </div>
-        </div>
       </div>
     );
   } else if (session.screen.name === 'countries') {

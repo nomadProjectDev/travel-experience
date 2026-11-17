@@ -17,6 +17,9 @@ const copy: PlatformCopy = {
     ],
     ctaLabel: 'Comenzar experiencia',
     ctaBusyLabel: 'Abriendo cámara…',
+    plateEyebrow: 'Experiencia cultural',
+    plateTitle: 'Latinoamérica',
+    plateTagline: 'Tradición · Identidad · Cultura',
   },
   generating: {
     statusLines: ['Abriendo la experiencia'],
