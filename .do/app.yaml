@@ -1,14 +1,13 @@
-# DigitalOcean App Platform — FITUR / Travel Experience MUPI
-# Spec for the existing app lego-mupi (29fb3e4c-941f-4a12-b71b-bf7867b40d7f).
-# Keep that app name so the ingress URL stays. Fill SECRET values in the dashboard.
-# VITE_KIOSK_API_KEY (BUILD) MUST equal API_KEY (RUN).
-name: lego-mupi
+# DigitalOcean App Platform — Travel Experience MUPI
+# Spec for app 29fb3e4c-941f-4a12-b71b-bf7867b40d7f (renamed from lego-mupi).
+# Fill SECRET values in the dashboard. VITE_KIOSK_API_KEY (BUILD) MUST equal API_KEY (RUN).
+name: travel-experience-mupi
 region: ams
 services:
   - name: web
     source_dir: /
     github:
-      repo: nomadProjectDev/fitur
+      repo: nomadProjectDev/travel-experience
       branch: main
       deploy_on_push: true
     environment_slug: node-js
