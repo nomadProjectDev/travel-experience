@@ -224,7 +224,7 @@ export const CLAY_EFFECTS: readonly TravelClayEffect[] = [
       src: `${EFFECT_ROOT}/puerto-rico-rojo-amarillo.png`,
       alt: 'Puerto Rico, vejigante rojo y amarillo',
     },
-    garmentImagePath: `${GARMENT_ROOT}/puerto-rico-rojo-amarillo-vton.png`,
+    garmentImagePath: `${GARMENT_ROOT}/puerto-rico-rojo-amarillo.webp`,
   },
   {
     id: 'puerto-rico-azul-verde',
@@ -240,7 +240,7 @@ export const CLAY_EFFECTS: readonly TravelClayEffect[] = [
       src: `${EFFECT_ROOT}/puerto-rico-azul-verde.png`,
       alt: 'Puerto Rico, vejigante azul y verde',
     },
-    garmentImagePath: `${GARMENT_ROOT}/puerto-rico-azul-verde-vton.png`,
+    garmentImagePath: `${GARMENT_ROOT}/puerto-rico-azul-verde.webp`,
   },
 ];
 
