@@ -219,12 +219,12 @@ export const CLAY_EFFECTS: readonly TravelClayEffect[] = [
     ink: 'light',
     style: 'regional vton',
     prompt:
-      'Substitute the outfit with a vibrant Puerto Rican carnival vejigante fustán bat-wing jumpsuit covered in layered jagged ruffles of bright red, orange, and golden yellow fabric, cinched with a tasseled rope waist belt, paired with a curved dotted carnival horn crown headband.',
+      'Substitute the outfit with a vibrant Puerto Rican carnival vejigante fustán bat-wing jumpsuit covered in layered jagged ruffles of bright red, orange, and golden yellow fabric, cinched with a tasseled rope waist belt, and a full-head closed vejigante mask with curved horns, dotted carnival paint, and carved fangs.',
     referenceImage: {
       src: `${EFFECT_ROOT}/puerto-rico-rojo-amarillo.png`,
       alt: 'Puerto Rico, vejigante rojo y amarillo',
     },
-    garmentImagePath: `${GARMENT_ROOT}/puerto-rico-rojo-amarillo.webp`,
+    garmentImagePath: `${EFFECT_ROOT}/puerto-rico-rojo-amarillo.png`,
   },
   {
     id: 'puerto-rico-azul-verde',
@@ -235,12 +235,12 @@ export const CLAY_EFFECTS: readonly TravelClayEffect[] = [
     ink: 'light',
     style: 'regional vton',
     prompt:
-      'Substitute the outfit with a vibrant Puerto Rican carnival vejigante fustán bat-wing jumpsuit and ruffled shoulder cape in layered royal blue and bright lime green fabric with cowrie shell chest trim, paired with a curved dotted blue-and-green carnival horn crown headband.',
+      'Substitute the outfit with a vibrant Puerto Rican carnival vejigante fustán bat-wing jumpsuit and ruffled shoulder cape in layered royal blue and bright lime green fabric with cowrie shell chest trim, and a full-head closed vejigante mask with curved horns, dotted blue-and-green carnival paint, and carved fangs.',
     referenceImage: {
       src: `${EFFECT_ROOT}/puerto-rico-azul-verde.png`,
       alt: 'Puerto Rico, vejigante azul y verde',
     },
-    garmentImagePath: `${GARMENT_ROOT}/puerto-rico-azul-verde.webp`,
+    garmentImagePath: `${EFFECT_ROOT}/puerto-rico-azul-verde.png`,
   },
 ];
 
